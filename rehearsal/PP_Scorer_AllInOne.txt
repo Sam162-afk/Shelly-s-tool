@@ -1,0 +1,583 @@
+/* ================================================================
+ Peaceful Pathway scorer: ALL-IN-ONE paste file for Apps Script.
+ Contains Key.js + Scoring.js + Sheet.js in that order, unchanged.
+ Paste this whole file into the single Code.gs file.
+ Source of truth: github.com/Sam162-afk/Shelly-s-tool (src/).
+ ================================================================ */
+
+/* ---------------- Key.js ---------------- */
+/**
+ * Peaceful Pathway Self-Discovery Assessment (100 items): answer key.
+ *
+ * Source: PP_Scoring_Template_v3, tab "Key Reference" (student version).
+ * The adult tab "Key Reference — Adult" has identical item numbers, traits and
+ * keys (its wording differs from this list only in item 64: "others's").
+ *
+ * Fields: n = item number (1-100, administered order), trait = O/C/E/A/N,
+ * reverse = true when the item is reverse-keyed (scored as 6 - response),
+ * text = item wording as printed on the form.
+ *
+ * Do not edit by hand. A change to the key must be made in the workbook first.
+ */
+var PP_ITEMS = [
+  { n: 1, trait: "N", reverse: false, text: "I find myself worrying about things." },
+  { n: 2, trait: "E", reverse: false, text: "I make friends and connections easily." },
+  { n: 3, trait: "O", reverse: false, text: "I have a vivid imagination." },
+  { n: 4, trait: "A", reverse: false, text: "I trust that most people have good intentions." },
+  { n: 5, trait: "C", reverse: false, text: "I handle responsibilities well and get good results." },
+  { n: 6, trait: "N", reverse: true, text: "I am relaxed most of the time." },
+  { n: 7, trait: "E", reverse: true, text: "I am hard to get to know." },
+  { n: 8, trait: "O", reverse: true, text: "I seldom daydream or imagine new possibilities." },
+  { n: 9, trait: "A", reverse: true, text: "I tend to be suspicious of people's motives." },
+  { n: 10, trait: "C", reverse: true, text: "I often misjudge situations." },
+  { n: 11, trait: "N", reverse: false, text: "I often fear that things will go wrong." },
+  { n: 12, trait: "E", reverse: false, text: "I warm up to new people quickly." },
+  { n: 13, trait: "O", reverse: false, text: "I enjoy creative thinking and exploring new ideas." },
+  { n: 14, trait: "A", reverse: false, text: "I believe people are basically good." },
+  { n: 15, trait: "C", reverse: false, text: "I know how to get things done." },
+  { n: 16, trait: "N", reverse: true, text: "I rarely get irritated." },
+  { n: 17, trait: "E", reverse: true, text: "I tend to keep others at a distance." },
+  { n: 18, trait: "O", reverse: true, text: "I have difficulty imagining things I have not experienced." },
+  { n: 19, trait: "A", reverse: true, text: "I am wary of people I do not know well." },
+  { n: 20, trait: "C", reverse: true, text: "I sometimes feel like I have little to contribute." },
+  { n: 21, trait: "N", reverse: false, text: "I get stressed out easily." },
+  { n: 22, trait: "E", reverse: false, text: "I feel comfortable around people." },
+  { n: 23, trait: "O", reverse: false, text: "I spend time reflecting on ideas and possibilities." },
+  { n: 24, trait: "A", reverse: false, text: "I generally take what people say at face value." },
+  { n: 25, trait: "C", reverse: false, text: "I come up with effective solutions when facing challenges." },
+  { n: 26, trait: "N", reverse: true, text: "I adapt easily when things change." },
+  { n: 27, trait: "E", reverse: false, text: "I enjoy being part of a group." },
+  { n: 28, trait: "O", reverse: false, text: "I believe art, music, and creativity are important." },
+  { n: 29, trait: "A", reverse: false, text: "I stick to my values and principles even when no one is watching." },
+  { n: 30, trait: "C", reverse: false, text: "I like to keep things organized and in order." },
+  { n: 31, trait: "N", reverse: false, text: "I get irritated easily." },
+  { n: 32, trait: "E", reverse: false, text: "I like involving others in what I am doing." },
+  { n: 33, trait: "O", reverse: false, text: "I notice beauty in things that others might overlook." },
+  { n: 34, trait: "A", reverse: false, text: "I try to be honest and transparent in everything I do." },
+  { n: 35, trait: "C", reverse: false, text: "I like working according to a clear plan." },
+  { n: 36, trait: "N", reverse: true, text: "I am not easily annoyed." },
+  { n: 37, trait: "E", reverse: true, text: "I prefer spending time alone." },
+  { n: 38, trait: "O", reverse: true, text: "I do not connect with art or creative expression." },
+  { n: 39, trait: "A", reverse: true, text: "I sometimes look for ways around rules I disagree with." },
+  { n: 40, trait: "C", reverse: true, text: "I often leave tasks or spaces in a disorganized state." },
+  { n: 41, trait: "N", reverse: false, text: "I get upset easily." },
+  { n: 42, trait: "E", reverse: false, text: "I enjoy social gatherings and events." },
+  { n: 43, trait: "O", reverse: false, text: "I enjoy experiences that engage my senses and sense of beauty." },
+  { n: 44, trait: "A", reverse: false, text: "I genuinely enjoy helping others." },
+  { n: 45, trait: "C", reverse: false, text: "I honor my commitments and responsibilities." },
+  { n: 46, trait: "N", reverse: false, text: "I am often in a bad mood." },
+  { n: 47, trait: "E", reverse: true, text: "I avoid crowded or noisy situations." },
+  { n: 48, trait: "O", reverse: true, text: "I do not seek out creative or artistic experiences." },
+  { n: 49, trait: "A", reverse: true, text: "I use flattery or charm to get what I want." },
+  { n: 50, trait: "C", reverse: true, text: "I am not bothered by mess or disorder." },
+  { n: 51, trait: "N", reverse: true, text: "I seldom feel down or blue." },
+  { n: 52, trait: "E", reverse: false, text: "I am comfortable taking the lead in group situations." },
+  { n: 53, trait: "O", reverse: false, text: "I experience my emotions strongly and deeply." },
+  { n: 54, trait: "A", reverse: false, text: "I anticipate what others need and try to help." },
+  { n: 55, trait: "C", reverse: false, text: "I keep my promises." },
+  { n: 56, trait: "N", reverse: true, text: "I feel comfortable with who I am." },
+  { n: 57, trait: "E", reverse: false, text: "I speak up and share my ideas." },
+  { n: 58, trait: "O", reverse: false, text: "I am good at picking up on how others are feeling." },
+  { n: 59, trait: "A", reverse: false, text: "I make others feel welcome and included." },
+  { n: 60, trait: "C", reverse: false, text: "I try to be honest even when it is not easy." },
+  { n: 61, trait: "N", reverse: false, text: "I worry that I will do or say the wrong thing." },
+  { n: 62, trait: "E", reverse: false, text: "I can persuade others when I believe in something." },
+  { n: 63, trait: "O", reverse: false, text: "I regularly reflect on my own motivations and inner life." },
+  { n: 64, trait: "A", reverse: true, text: "I tend to be dismissive of others' concerns." },
+  { n: 65, trait: "C", reverse: true, text: "I sometimes disregard commitments when it is convenient." },
+  { n: 66, trait: "N", reverse: false, text: "I feel nervous when I am the center of attention." },
+  { n: 67, trait: "E", reverse: true, text: "I tend to stay in the background in group situations." },
+  { n: 68, trait: "O", reverse: true, text: "I seldom get emotional." },
+  { n: 69, trait: "A", reverse: true, text: "I do not make much time for other people's concerns." },
+  { n: 70, trait: "C", reverse: true, text: "I do not always follow through on what I say I will do." },
+  { n: 71, trait: "N", reverse: false, text: "I only feel truly comfortable around people I know well." },
+  { n: 72, trait: "E", reverse: true, text: "I hold back my opinions even when I have something to say." },
+  { n: 73, trait: "O", reverse: false, text: "I prefer variety over doing the same things all the time." },
+  { n: 74, trait: "A", reverse: false, text: "I try to avoid unnecessary conflict." },
+  { n: 75, trait: "C", reverse: false, text: "I work hard toward goals that matter to me." },
+  { n: 76, trait: "N", reverse: true, text: "I am not easily embarrassed." },
+  { n: 77, trait: "E", reverse: false, text: "I am always on the go." },
+  { n: 78, trait: "O", reverse: false, text: "I enjoy discovering new places, people, and ideas." },
+  { n: 79, trait: "A", reverse: false, text: "I prefer working things out calmly rather than arguing." },
+  { n: 80, trait: "C", reverse: false, text: "I set high standards for myself." },
+  { n: 81, trait: "N", reverse: true, text: "I feel at ease in most social situations." },
+  { n: 82, trait: "E", reverse: false, text: "I can manage many things at the same time." },
+  { n: 83, trait: "O", reverse: false, text: "I enjoy starting new projects and exploring new directions." },
+  { n: 84, trait: "A", reverse: true, text: "I say sharp or cutting things when I am frustrated." },
+  { n: 85, trait: "C", reverse: false, text: "I put my full effort into the things I care about." },
+  { n: 86, trait: "N", reverse: false, text: "I often act before thinking about the consequences." },
+  { n: 87, trait: "E", reverse: false, text: "I react quickly to what is happening around me." },
+  { n: 88, trait: "O", reverse: true, text: "I prefer sticking with what I already know." },
+  { n: 89, trait: "A", reverse: true, text: "I tend to hold grudges." },
+  { n: 90, trait: "C", reverse: true, text: "I do just enough to get by." },
+  { n: 91, trait: "N", reverse: false, text: "I do things I later regret." },
+  { n: 92, trait: "E", reverse: true, text: "I prefer a relaxed and slower-paced way of living." },
+  { n: 93, trait: "O", reverse: true, text: "I dislike change and find it unsettling." },
+  { n: 94, trait: "A", reverse: true, text: "I can be confrontational when I feel challenged." },
+  { n: 95, trait: "C", reverse: true, text: "I am not strongly motivated to push myself further." },
+  { n: 96, trait: "N", reverse: false, text: "I have a hard time resisting impulses I know are unhelpful." },
+  { n: 97, trait: "E", reverse: true, text: "I like to let things unfold at their own pace." },
+  { n: 98, trait: "O", reverse: false, text: "I think most issues have more than one right answer." },
+  { n: 99, trait: "A", reverse: false, text: "I care deeply about people who are going through hard times." },
+  { n: 100, trait: "C", reverse: false, text: "I think carefully before making important decisions." },
+];
+
+/* ---------------- Scoring.js ---------------- */
+/**
+ * Peaceful Pathway scoring core. Pure logic: no spreadsheet or network access.
+ *
+ * Rules implemented here come from PP_Feedback_Content_Developer_Handoff
+ * (Read Me, Steps 1-4) and PP_Scoring_Template_v3:
+ *   - responses are whole numbers 1-5; reverse-keyed items score 6 - response
+ *   - trait score = average of its 20 items (kept here as an exact integer sum)
+ *   - Low < 2.65, Medium 2.65 to < 3.45, High >= 3.45
+ *   - rank traits by score, ties broken O, C, E, A, N
+ *   - main pair = ranks 1 and 2
+ *   - second pair = top trait + the trait in ranks 3-5 with the biggest level
+ *     gap from it (ties go to the higher-ranked trait; if no gaps, rank 3)
+ *   - closing = top trait at its level
+ *
+ * This module produces KEYS only. It never contains or generates feedback text.
+ */
+var PPScoring = (function () {
+  'use strict';
+
+  var TRAITS = ['O', 'C', 'E', 'A', 'N'];      // report order and tie-break order
+  var PAIR_ORDER = ['O', 'N', 'E', 'A', 'C'];  // order used inside pair lookup keys
+  var LEVELS = ['Low', 'Medium', 'High'];
+  var ITEMS_PER_TRAIT = 20;
+
+  // Cutoffs as whole-number sums of 20 items. Every possible 20-item average is
+  // a multiple of 0.05, so "average < 2.65" is exactly "sum <= 52" and
+  // "average < 3.45" is exactly "sum <= 68". Integers avoid rounding errors.
+  var LOW_MAX_SUM = 52;
+  var MEDIUM_MAX_SUM = 68;
+
+  function levelForSum(sum) {
+    if (sum <= LOW_MAX_SUM) return 'Low';
+    if (sum <= MEDIUM_MAX_SUM) return 'Medium';
+    return 'High';
+  }
+
+  function levelLetter(level) {
+    return level.charAt(0); // Low -> L, Medium -> M, High -> H
+  }
+
+  function levelRank(level) {
+    return LEVELS.indexOf(level); // Low 0, Medium 1, High 2
+  }
+
+  /** Make a form header or key text comparable (spaces, curly quotes, item 64 typo). */
+  function normalizeText(text) {
+    return String(text === null || text === undefined ? '' : text)
+      .replace(/[‘’ʼ]/g, "'")
+      .replace(/[“”]/g, '"')
+      .replace(/\s+/g, ' ')
+      .trim()
+      .replace(/others's/g, "others'"); // the live form prints "others's" in item 64
+  }
+
+  /**
+   * Find the 100 answer columns in a header row by matching item text.
+   * Returns { columns: [0-based index per item 1..100], missing: [item numbers],
+   * duplicates: [item numbers] }. Columns not in the key (name, grade, email,
+   * birth month, stray headers, scored columns) are ignored.
+   */
+  function locateItemColumns(headerRow) {
+    var byText = {};
+    for (var c = 0; c < headerRow.length; c++) {
+      var key = normalizeText(headerRow[c]);
+      if (key === '') continue;
+      (byText[key] = byText[key] || []).push(c);
+    }
+    var columns = [];
+    var missing = [];
+    var duplicates = [];
+    for (var i = 0; i < PP_ITEMS.length; i++) {
+      var found = byText[normalizeText(PP_ITEMS[i].text)] || [];
+      if (found.length === 0) {
+        missing.push(PP_ITEMS[i].n);
+        columns.push(-1);
+      } else if (found.length > 1) {
+        duplicates.push(PP_ITEMS[i].n);
+        columns.push(found[0]);
+      } else {
+        columns.push(found[0]);
+      }
+    }
+    return { columns: columns, missing: missing, duplicates: duplicates };
+  }
+
+  /** A response must be a whole number 1-5 (a number or a digit string). */
+  function parseAnswer(value) {
+    if (typeof value === 'number') {
+      return value === Math.floor(value) && value >= 1 && value <= 5 ? value : null;
+    }
+    if (typeof value === 'string' && /^\s*[1-5]\s*$/.test(value)) {
+      return parseInt(value, 10);
+    }
+    return null;
+  }
+
+  function pairKey(a, b, levels) {
+    var first = PAIR_ORDER.indexOf(a) < PAIR_ORDER.indexOf(b) ? a : b;
+    var second = first === a ? b : a;
+    return first + '(' + levelLetter(levels[first]) + ')+' +
+           second + '(' + levelLetter(levels[second]) + ')';
+  }
+
+  function closingKey(trait, levels) {
+    return trait + '(' + levelLetter(levels[trait]) + ')';
+  }
+
+  /**
+   * Score 100 raw answers (item 1 first). Throws an Error naming the problem if
+   * the input is not exactly 100 whole numbers from 1 to 5; it never guesses.
+   */
+  function score(answers) {
+    if (!answers || answers.length !== PP_ITEMS.length) {
+      throw new Error('Expected ' + PP_ITEMS.length + ' answers, got ' +
+                      (answers ? answers.length : 0));
+    }
+    var sums = { O: 0, C: 0, E: 0, A: 0, N: 0 };
+    var bad = [];
+    for (var i = 0; i < PP_ITEMS.length; i++) {
+      var value = parseAnswer(answers[i]);
+      if (value === null) {
+        bad.push('item ' + PP_ITEMS[i].n + ' ("' + answers[i] + '")');
+        continue;
+      }
+      sums[PP_ITEMS[i].trait] += PP_ITEMS[i].reverse ? 6 - value : value;
+    }
+    if (bad.length > 0) {
+      throw new Error('Answers must be whole numbers 1-5. Problem with: ' +
+                      bad.slice(0, 5).join(', ') + (bad.length > 5 ? ', and ' + (bad.length - 5) + ' more' : ''));
+    }
+
+    var averages = {};
+    var levels = {};
+    TRAITS.forEach(function (t) {
+      averages[t] = Math.round(sums[t] * 5) / 100; // sum / 20, exact to 2 decimals
+      levels[t] = levelForSum(sums[t]);
+    });
+
+    var ranking = TRAITS.slice().sort(function (a, b) {
+      return sums[b] - sums[a] || TRAITS.indexOf(a) - TRAITS.indexOf(b);
+    });
+
+    var top = ranking[0];
+    var partner = ranking[2];
+    var bestGap = Math.abs(levelRank(levels[top]) - levelRank(levels[partner]));
+    for (var r = 3; r < ranking.length; r++) {
+      var gap = Math.abs(levelRank(levels[top]) - levelRank(levels[ranking[r]]));
+      if (gap > bestGap) { // strictly greater: ties keep the higher-ranked trait
+        bestGap = gap;
+        partner = ranking[r];
+      }
+    }
+
+    return {
+      sums: sums,
+      averages: averages,
+      levels: levels,
+      ranking: ranking,
+      mainPairKey: pairKey(ranking[0], ranking[1], levels),
+      secondPairKey: pairKey(top, partner, levels),
+      closingKey: closingKey(top, levels)
+    };
+  }
+
+  /** First name = text before the first space in "first name and last initial". */
+  function firstNameFrom(value) {
+    var text = String(value === null || value === undefined ? '' : value)
+      .replace(/\s+/g, ' ').trim();
+    return text === '' ? '' : text.split(' ')[0];
+  }
+
+  /** Column headers written to the sheet, in order. */
+  var OUTPUT_HEADERS = (function () {
+    var headers = ['PP First Name'];
+    TRAITS.forEach(function (t) {
+      headers.push('PP ' + t + ' Sum', 'PP ' + t + ' Avg', 'PP ' + t + ' Level');
+    });
+    headers.push('PP Ranking', 'PP Main Pair Key', 'PP Second Pair Key',
+                 'PP Closing Key', 'PP Scoring Status');
+    return headers;
+  })();
+
+  /** Values matching OUTPUT_HEADERS for a successful score. */
+  function outputValues(result, firstName) {
+    var values = [firstName];
+    TRAITS.forEach(function (t) {
+      values.push(result.sums[t], result.averages[t], result.levels[t]);
+    });
+    values.push(result.ranking.join(' > '), result.mainPairKey,
+                result.secondPairKey, result.closingKey, 'OK');
+    return values;
+  }
+
+  /** Values matching OUTPUT_HEADERS for a row that could not be scored. */
+  function errorValues(firstName, message) {
+    var values = [firstName];
+    for (var i = 1; i < OUTPUT_HEADERS.length - 1; i++) values.push('');
+    values.push('ERROR: ' + message);
+    return values;
+  }
+
+  return {
+    TRAITS: TRAITS,
+    PAIR_ORDER: PAIR_ORDER,
+    LEVELS: LEVELS,
+    ITEMS_PER_TRAIT: ITEMS_PER_TRAIT,
+    LOW_MAX_SUM: LOW_MAX_SUM,
+    MEDIUM_MAX_SUM: MEDIUM_MAX_SUM,
+    OUTPUT_HEADERS: OUTPUT_HEADERS,
+    levelForSum: levelForSum,
+    normalizeText: normalizeText,
+    locateItemColumns: locateItemColumns,
+    parseAnswer: parseAnswer,
+    score: score,
+    firstNameFrom: firstNameFrom,
+    outputValues: outputValues,
+    errorValues: errorValues
+  };
+})();
+
+/* ---------------- Sheet.js ---------------- */
+/**
+ * Google Sheets glue for the Peaceful Pathway scorer (bound Apps Script).
+ *
+ * What it does: when a new form response arrives (or when "Re-score all rows"
+ * is chosen), it scores the row and writes the keys, scores and levels into
+ * columns at the end of the same tab. It only ever writes into its own
+ * "PP ..." columns. It never edits answers or any other column, never creates
+ * documents, never sends email, and makes no network requests.
+ *
+ * Nothing here runs until someone chooses "Install auto-scoring trigger" from
+ * the Peaceful Pathway menu in the sheet.
+ */
+var PP_CONFIG = {
+  SHEET_NAME: 'Form Responses 1',
+  MENU_TITLE: 'Peaceful Pathway',
+  NAME_HEADER_PREFIX: 'your first name',
+  TRIGGER_HANDLER: 'handleFormSubmit'
+};
+
+/* ---------- helpers (trailing underscore = private in Apps Script) ---------- */
+
+function ppReadHeader_(sheet) {
+  var lastCol = sheet.getLastColumn();
+  return lastCol > 0 ? sheet.getRange(1, 1, 1, lastCol).getValues()[0] : [];
+}
+
+function ppFindNameColumn_(header) {
+  for (var c = 0; c < header.length; c++) {
+    if (PPScoring.normalizeText(header[c]).toLowerCase().indexOf(PP_CONFIG.NAME_HEADER_PREFIX) === 0) {
+      return c;
+    }
+  }
+  return -1;
+}
+
+/** Plain-language description of a header problem, or '' when the headers are fine. */
+function ppSetupProblem_(layout) {
+  var parts = [];
+  if (layout.missing.length > 0) {
+    parts.push('form headers do not match the answer key; missing item(s): ' + layout.missing.join(', '));
+  }
+  if (layout.duplicates.length > 0) {
+    parts.push('duplicate header(s) for item(s): ' + layout.duplicates.join(', '));
+  }
+  return parts.join('; ');
+}
+
+/**
+ * Make sure every "PP ..." output column exists, adding any that are missing
+ * after the last used column. Returns the 1-based column number of each output
+ * header, in PPScoring.OUTPUT_HEADERS order. Safe to call repeatedly.
+ */
+function ppEnsureOutputColumns_(sheet) {
+  var wanted = PPScoring.OUTPUT_HEADERS;
+  var lastCol = sheet.getLastColumn();
+  var header = ppReadHeader_(sheet);
+  var cols = [];
+  var missing = [];
+  wanted.forEach(function (h) {
+    var idx = header.indexOf(h);
+    if (idx < 0) { missing.push(h); }
+    cols.push(idx < 0 ? null : idx + 1);
+  });
+  if (missing.length === 0) { return cols; }
+
+  var firstNew = lastCol + 1;
+  var lastNeeded = lastCol + missing.length;
+  var maxCols = sheet.getMaxColumns();
+  if (lastNeeded > maxCols) {
+    sheet.insertColumnsAfter(maxCols, lastNeeded - maxCols);
+  }
+  sheet.getRange(1, firstNew, 1, missing.length).setValues([missing]);
+  var k = 0;
+  for (var i = 0; i < cols.length; i++) {
+    if (cols[i] === null) { cols[i] = firstNew + k; k++; }
+  }
+  return cols;
+}
+
+/** Write rows of values into the given (1-based) columns, one block per run of adjacent columns. */
+function ppWriteColumns_(sheet, firstRow, cols, rows) {
+  var i = 0;
+  while (i < cols.length) {
+    var j = i;
+    while (j + 1 < cols.length && cols[j + 1] === cols[j] + 1) { j++; }
+    var block = rows.map(function (r) { return r.slice(i, j + 1); });
+    sheet.getRange(firstRow, cols[i], rows.length, j - i + 1).setValues(block);
+    i = j + 1;
+  }
+}
+
+function ppIsBlankRow_(row) {
+  for (var c = 0; c < row.length; c++) {
+    if (row[c] !== '' && row[c] !== null && row[c] !== undefined) { return false; }
+  }
+  return true;
+}
+
+/**
+ * Score rows firstRow..lastRow (1-based, header is row 1) and write the results.
+ * A row that cannot be scored gets "ERROR: ..." in its status column.
+ * Returns { scored, errors }.
+ */
+function ppScoreRows_(sheet, firstRow, lastRow) {
+  if (firstRow < 2) { firstRow = 2; }
+  if (lastRow < firstRow) { return { scored: 0, errors: 0 }; }
+
+  var outCols = ppEnsureOutputColumns_(sheet);
+  var lastCol = sheet.getLastColumn();
+  var header = ppReadHeader_(sheet);
+  var layout = PPScoring.locateItemColumns(header);
+  var problem = ppSetupProblem_(layout);
+  var nameCol = ppFindNameColumn_(header);
+
+  var count = lastRow - firstRow + 1;
+  var data = sheet.getRange(firstRow, 1, count, lastCol).getValues();
+  var out = [];
+  var scored = 0;
+  var errors = 0;
+
+  data.forEach(function (row) {
+    if (ppIsBlankRow_(row)) {
+      out.push(PPScoring.OUTPUT_HEADERS.map(function () { return ''; }));
+      return;
+    }
+    var firstName = nameCol >= 0 ? PPScoring.firstNameFrom(row[nameCol]) : '';
+    if (problem !== '') {
+      out.push(PPScoring.errorValues(firstName, problem));
+      errors++;
+      return;
+    }
+    try {
+      var answers = layout.columns.map(function (c) { return row[c]; });
+      out.push(PPScoring.outputValues(PPScoring.score(answers), firstName));
+      scored++;
+    } catch (err) {
+      out.push(PPScoring.errorValues(firstName, err.message));
+      errors++;
+    }
+  });
+
+  ppWriteColumns_(sheet, firstRow, outCols, out);
+  return { scored: scored, errors: errors };
+}
+
+function ppGetResponsesSheet_() {
+  var sheet = SpreadsheetApp.getActive().getSheetByName(PP_CONFIG.SHEET_NAME);
+  if (!sheet) {
+    throw new Error('Could not find a tab named "' + PP_CONFIG.SHEET_NAME + '".');
+  }
+  return sheet;
+}
+
+/** Text for the "Check setup" dialog. Does not change the sheet. */
+function ppSetupReport_(header, triggerInstalled) {
+  var layout = PPScoring.locateItemColumns(header);
+  var found = PPScoring.OUTPUT_HEADERS.filter(function (h) { return header.indexOf(h) >= 0; }).length;
+  var lines = [];
+  lines.push('Answer columns found: ' + (100 - layout.missing.length) + ' of 100');
+  if (layout.missing.length > 0) { lines.push('  Missing items: ' + layout.missing.join(', ')); }
+  if (layout.duplicates.length > 0) { lines.push('  Duplicate items: ' + layout.duplicates.join(', ')); }
+  lines.push('First-name column: ' + (ppFindNameColumn_(header) >= 0 ? 'found' : 'NOT found'));
+  lines.push('Score columns present: ' + found + ' of ' + PPScoring.OUTPUT_HEADERS.length +
+             (found === 0 ? ' (they are added on the first scoring run)' : ''));
+  lines.push('Auto-scoring trigger: ' + (triggerInstalled ? 'installed' : 'NOT installed'));
+  return lines.join('\n');
+}
+
+/* ---------- entry points ---------- */
+
+/** Installable trigger: runs once for every new form submission. */
+function handleFormSubmit(e) {
+  var lock = LockService.getScriptLock();
+  lock.waitLock(30000);
+  try {
+    var row = e.range.getRow();
+    ppScoreRows_(e.range.getSheet(), row, row);
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+/** Menu: score every response row again (safe to run any time). */
+function rescoreAllRows() {
+  var ui = SpreadsheetApp.getUi();
+  var lock = LockService.getScriptLock();
+  lock.waitLock(30000);
+  try {
+    var sheet = ppGetResponsesSheet_();
+    var lastRow = sheet.getLastRow();
+    if (lastRow < 2) {
+      ui.alert('There are no responses to score yet.');
+      return;
+    }
+    var result = ppScoreRows_(sheet, 2, lastRow);
+    ui.alert('Scored ' + result.scored + ' row(s). ' + result.errors +
+             ' row(s) had errors (see the "PP Scoring Status" column).');
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+/** Menu: report on the sheet's setup without changing anything. */
+function checkSetup() {
+  var ui = SpreadsheetApp.getUi();
+  var sheet = ppGetResponsesSheet_();
+  var installed = ScriptApp.getProjectTriggers().some(function (t) {
+    return t.getHandlerFunction() === PP_CONFIG.TRIGGER_HANDLER;
+  });
+  ui.alert('Peaceful Pathway setup check', ppSetupReport_(ppReadHeader_(sheet), installed), ui.ButtonSet.OK);
+}
+
+/**
+ * Menu: turn on automatic scoring. The trigger belongs to whoever runs this,
+ * so after a change of sheet owner the new owner should run it again.
+ */
+function installTrigger() {
+  var ui = SpreadsheetApp.getUi();
+  ScriptApp.getProjectTriggers().forEach(function (t) {
+    if (t.getHandlerFunction() === PP_CONFIG.TRIGGER_HANDLER) { ScriptApp.deleteTrigger(t); }
+  });
+  ScriptApp.newTrigger(PP_CONFIG.TRIGGER_HANDLER)
+    .forSpreadsheet(SpreadsheetApp.getActive())
+    .onFormSubmit()
+    .create();
+  ui.alert('Automatic scoring is now on. New form responses will be scored as they arrive.');
+}
+
+/** Adds the menu when the sheet opens. */
+function onOpen() {
+  SpreadsheetApp.getUi()
+    .createMenu(PP_CONFIG.MENU_TITLE)
+    .addItem('Re-score all rows', 'rescoreAllRows')
+    .addItem('Check setup', 'checkSetup')
+    .addItem('Install auto-scoring trigger', 'installTrigger')
+    .addToUi();
+}
