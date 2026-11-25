@@ -1,0 +1,9 @@
+{
+  "name": "peaceful-pathway-scorer",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Scores the Peaceful Pathway 100-item assessment inside a Google Sheet (keys only, no feedback text).",
+  "scripts": {
+    "test": "node --test \"test/*.test.js\""
+  }
+}

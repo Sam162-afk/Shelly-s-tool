@@ -1,0 +1,7 @@
+node_modules/
+# Never commit response data or content workbooks.
+*.xlsx
+*.xls
+*.csv
+*.ods
+data/
