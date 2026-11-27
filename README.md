@@ -14,13 +14,14 @@ Owner: Peaceful Pathway, L.L.C. (per the developer handoff).
 
 | Piece | Status |
 |---|---|
-| Scoring logic and answer key | Done. 46 tests pass (`npm test`). |
+| Scoring logic and answer key | Done. Tests pass (`npm test`). |
 | Matches Shelly's own scoring workbook | Done. 1,610 test respondents (every possible score 20 to 100 for each trait, plus random and extreme patterns) run through her `PP_Scoring_Template_v3` formulas and compared to this code: 8,050 trait results, **0 differences**. (Recalculated in LibreOffice; the test files are not in the repo.) |
 | Pair and closing keys | Reproduce all five Worked Examples in her handoff, and every possible result is a valid lookup key (1,620 distinct reports). |
 | Runs in real Google Sheets | Done. 10 fake rows pasted into a practice copy, menu *Re-score all rows*: all 10 matched the expected answers, and the deliberately broken row was flagged `ERROR`. |
 | Automatic trigger | Done on a practice copy. A fake response submitted through a copy of the student form was scored automatically within seconds and matched the expected keys. |
 | Installed on Shelly's real form/sheet | **Not done.** Needs Shelly's account (see "Going live"). |
-| Report (feedback document) generation | **Not started.** Planned next (see "Where we are going"). |
+| Report assembler (`src/Report.js`) | **Done and tested, not yet wired into the sheet.** Turns the scorer's keys into the report pieces using only Shelly's wording. Matches all five Worked Examples word for word; all 1,620 possible results resolve. No Google Doc/PDF output yet. |
+| Report document (styled PDF) and sheet wiring | **Not started.** Needs her layout decisions (see "Where we are going"). |
 | Adult form | Out of scope for now. |
 | Deep Dives (60-item tests) | Out of scope for now. |
 
@@ -113,10 +114,12 @@ Keys match the **Lookup Key** column of the handoff workbook's *Combination Port
 |---|---|
 | `src/Key.js` | The 100-item answer key, generated from the workbook's *Key Reference* tab |
 | `src/Scoring.js` | Pure scoring logic |
+| `src/Report.js` | Pure report assembler: reads the content tabs, looks up text by key, adds no wording. Not yet in the all-in-one paste file (not used by the sheet yet) |
 | `src/Sheet.js` | Google Sheets glue: trigger, menu, column handling |
+| `tools/make-fixture.py` | Converts the handoff workbook into `test/fixtures/handoff.json` (her wording; gitignored) for the real-wording tests |
 | `appsscript.json` | Apps Script manifest (V8 runtime, permission scopes) |
 | `rehearsal/PP_Scorer_AllInOne.txt` | The three `src/` files joined in load order, for pasting into one `Code.gs` (or attaching to email; Gmail blocks `.js`) |
-| `test/` | 46 tests, run with `npm test` (Node 22 or later, no dependencies) |
+| `test/` | 60 tests, run with `npm test` (Node 22 or later, no dependencies). The real-wording tests (`report.handoff.test.js`) are skipped, loudly, unless `test/fixtures/handoff.json` exists |
 
 The all-in-one file is **generated from `src/`; edit `src/`, not that file.** To rebuild it:
 
@@ -142,6 +145,6 @@ The all-in-one file is **generated from `src/`; edit `src/`, not that file.** To
 
 ## How to resume
 
-1. Read this file, then run `npm test` (should show 46 passing).
+1. Read this file, then run `npm test` (should show 60 passing; build the fixture first so none are skipped).
 2. The sources of truth are Shelly's handoff workbook (`PP_Feedback_Content_Developer_Handoff`: Read Me rules, Combination Portraits, Portrait Closings, Initial Test, Worked Examples) and `PP_Scoring_Template_v3` (Key Reference). Neither is in this repo.
 3. Next task: the go-live meeting checklist above, then the report-generation practice build.

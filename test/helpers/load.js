@@ -5,7 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const vm = require('vm');
 
-const FILES = ['Key.js', 'Scoring.js', 'Sheet.js'];
+const FILES = ['Key.js', 'Scoring.js', 'Report.js', 'Sheet.js'];
 
 for (const file of FILES) {
   const full = path.join(__dirname, '..', '..', 'src', file);
@@ -14,6 +14,7 @@ for (const file of FILES) {
 
 module.exports = {
   PPScoring: globalThis.PPScoring,
+  PPReport: globalThis.PPReport,
   PP_ITEMS: globalThis.PP_ITEMS,
   PP_CONFIG: globalThis.PP_CONFIG,
   sheetFns: {
