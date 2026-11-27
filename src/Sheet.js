@@ -4,8 +4,9 @@
  * What it does: when a new form response arrives (or when "Re-score all rows"
  * is chosen), it scores the row and writes the keys, scores and levels into
  * columns at the end of the same tab. It only ever writes into its own
- * "PP ..." columns. It never edits answers or any other column, never creates
- * documents, never sends email, and makes no network requests.
+ * "PP ..." columns. It never edits answers or any other column, never sends
+ * email, and makes no network requests. Documents and Drive are touched only by
+ * ReportDoc.js, and only if the optional report step has been set up.
  *
  * Nothing here runs until someone chooses "Install auto-scoring trigger" from
  * the Peaceful Pathway menu in the sheet.
@@ -46,12 +47,11 @@ function ppSetupProblem_(layout) {
 }
 
 /**
- * Make sure every "PP ..." output column exists, adding any that are missing
- * after the last used column. Returns the 1-based column number of each output
- * header, in PPScoring.OUTPUT_HEADERS order. Safe to call repeatedly.
+ * Make sure every wanted header exists, adding any that are missing after the
+ * last used column. Returns the 1-based column number of each header, in the
+ * order given. Safe to call repeatedly.
  */
-function ppEnsureOutputColumns_(sheet) {
-  var wanted = PPScoring.OUTPUT_HEADERS;
+function ppEnsureColumns_(sheet, wanted) {
   var lastCol = sheet.getLastColumn();
   var header = ppReadHeader_(sheet);
   var cols = [];
@@ -75,6 +75,11 @@ function ppEnsureOutputColumns_(sheet) {
     if (cols[i] === null) { cols[i] = firstNew + k; k++; }
   }
   return cols;
+}
+
+/** The scorer's "PP ..." output columns (see PPScoring.OUTPUT_HEADERS). */
+function ppEnsureOutputColumns_(sheet) {
+  return ppEnsureColumns_(sheet, PPScoring.OUTPUT_HEADERS);
 }
 
 /** Write rows of values into the given (1-based) columns, one block per run of adjacent columns. */
@@ -152,7 +157,7 @@ function ppGetResponsesSheet_() {
 }
 
 /** Text for the "Check setup" dialog. Does not change the sheet. */
-function ppSetupReport_(header, triggerInstalled) {
+function ppSetupReport_(header, triggerInstalled, reports) {
   var layout = PPScoring.locateItemColumns(header);
   var found = PPScoring.OUTPUT_HEADERS.filter(function (h) { return header.indexOf(h) >= 0; }).length;
   var lines = [];
@@ -163,21 +168,59 @@ function ppSetupReport_(header, triggerInstalled) {
   lines.push('Score columns present: ' + found + ' of ' + PPScoring.OUTPUT_HEADERS.length +
              (found === 0 ? ' (they are added on the first scoring run)' : ''));
   lines.push('Auto-scoring trigger: ' + (triggerInstalled ? 'installed' : 'NOT installed'));
+  if (reports) {
+    lines.push('Report folder and template: ' + (reports.configured ? 'set up' : 'NOT set up (optional)'));
+    if (reports.configured) {
+      lines.push('Automatic reports: ' + (reports.auto ? 'ON' : 'off'));
+    }
+  }
   return lines.join('\n');
 }
 
 /* ---------- entry points ---------- */
 
-/** Installable trigger: runs once for every new form submission. */
+/**
+ * Optional report steps (ReportSheet.js). The scorer works without them, and they must
+ * never stop or undo scoring, so every failure here is logged and swallowed.
+ */
+function ppReportsMarkPendingSafe_(sheet, firstRow, lastRow) {
+  if (typeof ppReportsMarkPending_ !== 'function') { return; }
+  try {
+    ppReportsMarkPending_(sheet, firstRow, lastRow);
+  } catch (err) {
+    console.error('Report step (mark pending) failed: ' + err.message);
+  }
+}
+
+function ppReportsGenerateSafe_(sheet, firstRow, lastRow) {
+  if (typeof ppReportsGenerate_ !== 'function') { return null; }
+  try {
+    return ppReportsGenerate_(sheet, firstRow, lastRow);
+  } catch (err) {
+    console.error('Report step (generate) failed: ' + err.message);
+    return null;
+  }
+}
+
+/**
+ * Installable trigger: runs once for every new form submission. Scoring happens
+ * under the lock; making the PDF happens after it is released, so a slow report
+ * can never make a later student's scoring wait or time out.
+ */
 function handleFormSubmit(e) {
   var lock = LockService.getScriptLock();
   lock.waitLock(30000);
+  var row;
+  var sheet;
   try {
-    var row = e.range.getRow();
-    ppScoreRows_(e.range.getSheet(), row, row);
+    row = e.range.getRow();
+    sheet = e.range.getSheet();
+    ppScoreRows_(sheet, row, row);
+    ppReportsMarkPendingSafe_(sheet, row, row);
   } finally {
     lock.releaseLock();
   }
+  ppReportsGenerateSafe_(sheet, row, row);
 }
 
 /** Menu: score every response row again (safe to run any time). */
@@ -185,19 +228,26 @@ function rescoreAllRows() {
   var ui = SpreadsheetApp.getUi();
   var lock = LockService.getScriptLock();
   lock.waitLock(30000);
+  var sheet;
+  var lastRow;
+  var message;
   try {
-    var sheet = ppGetResponsesSheet_();
-    var lastRow = sheet.getLastRow();
+    sheet = ppGetResponsesSheet_();
+    lastRow = sheet.getLastRow();
     if (lastRow < 2) {
       ui.alert('There are no responses to score yet.');
       return;
     }
     var result = ppScoreRows_(sheet, 2, lastRow);
-    ui.alert('Scored ' + result.scored + ' row(s). ' + result.errors +
-             ' row(s) had errors (see the "PP Scoring Status" column).');
+    ppReportsMarkPendingSafe_(sheet, 2, lastRow);
+    message = 'Scored ' + result.scored + ' row(s). ' + result.errors +
+              ' row(s) had errors (see the "PP Scoring Status" column).';
   } finally {
     lock.releaseLock();
   }
+  var reports = ppReportsGenerateSafe_(sheet, 2, lastRow);
+  if (reports) { message += ' ' + ppReportSummary_(reports); }
+  ui.alert(message);
 }
 
 /** Menu: report on the sheet's setup without changing anything. */
@@ -207,7 +257,8 @@ function checkSetup() {
   var installed = ScriptApp.getProjectTriggers().some(function (t) {
     return t.getHandlerFunction() === PP_CONFIG.TRIGGER_HANDLER;
   });
-  ui.alert('Peaceful Pathway setup check', ppSetupReport_(ppReadHeader_(sheet), installed), ui.ButtonSet.OK);
+  var reports = typeof ppReportSettings_ === 'function' ? ppReportSettings_() : null;
+  ui.alert('Peaceful Pathway setup check', ppSetupReport_(ppReadHeader_(sheet), installed, reports), ui.ButtonSet.OK);
 }
 
 /**
@@ -228,10 +279,17 @@ function installTrigger() {
 
 /** Adds the menu when the sheet opens. */
 function onOpen() {
-  SpreadsheetApp.getUi()
+  var menu = SpreadsheetApp.getUi()
     .createMenu(PP_CONFIG.MENU_TITLE)
     .addItem('Re-score all rows', 'rescoreAllRows')
     .addItem('Check setup', 'checkSetup')
-    .addItem('Install auto-scoring trigger', 'installTrigger')
-    .addToUi();
+    .addItem('Install auto-scoring trigger', 'installTrigger');
+  if (typeof setUpReports === 'function') {
+    menu.addSeparator()
+      .addItem('Set up report folder and template', 'setUpReports')
+      .addItem('Use a different report template', 'chooseReportTemplate')
+      .addItem('Turn automatic reports on or off', 'toggleAutoReports')
+      .addItem('Generate pending reports', 'generatePendingReports');
+  }
+  menu.addToUi();
 }

@@ -1,0 +1,1456 @@
+/* Peaceful Pathway scorer: ALL-IN-ONE paste file (scoring + PDF reports). Source of truth: src/. */
+
+/* ---------------- Key.js ---------------- */
+/**
+ * Peaceful Pathway Self-Discovery Assessment (100 items): answer key.
+ *
+ * Source: PP_Scoring_Template_v3, tab "Key Reference" (student version).
+ * The adult tab "Key Reference — Adult" has identical item numbers, traits and
+ * keys (its wording differs from this list only in item 64: "others's").
+ *
+ * Fields: n = item number (1-100, administered order), trait = O/C/E/A/N,
+ * reverse = true when the item is reverse-keyed (scored as 6 - response),
+ * text = item wording as printed on the form.
+ *
+ * Do not edit by hand. A change to the key must be made in the workbook first.
+ */
+var PP_ITEMS = [
+  { n: 1, trait: "N", reverse: false, text: "I find myself worrying about things." },
+  { n: 2, trait: "E", reverse: false, text: "I make friends and connections easily." },
+  { n: 3, trait: "O", reverse: false, text: "I have a vivid imagination." },
+  { n: 4, trait: "A", reverse: false, text: "I trust that most people have good intentions." },
+  { n: 5, trait: "C", reverse: false, text: "I handle responsibilities well and get good results." },
+  { n: 6, trait: "N", reverse: true, text: "I am relaxed most of the time." },
+  { n: 7, trait: "E", reverse: true, text: "I am hard to get to know." },
+  { n: 8, trait: "O", reverse: true, text: "I seldom daydream or imagine new possibilities." },
+  { n: 9, trait: "A", reverse: true, text: "I tend to be suspicious of people's motives." },
+  { n: 10, trait: "C", reverse: true, text: "I often misjudge situations." },
+  { n: 11, trait: "N", reverse: false, text: "I often fear that things will go wrong." },
+  { n: 12, trait: "E", reverse: false, text: "I warm up to new people quickly." },
+  { n: 13, trait: "O", reverse: false, text: "I enjoy creative thinking and exploring new ideas." },
+  { n: 14, trait: "A", reverse: false, text: "I believe people are basically good." },
+  { n: 15, trait: "C", reverse: false, text: "I know how to get things done." },
+  { n: 16, trait: "N", reverse: true, text: "I rarely get irritated." },
+  { n: 17, trait: "E", reverse: true, text: "I tend to keep others at a distance." },
+  { n: 18, trait: "O", reverse: true, text: "I have difficulty imagining things I have not experienced." },
+  { n: 19, trait: "A", reverse: true, text: "I am wary of people I do not know well." },
+  { n: 20, trait: "C", reverse: true, text: "I sometimes feel like I have little to contribute." },
+  { n: 21, trait: "N", reverse: false, text: "I get stressed out easily." },
+  { n: 22, trait: "E", reverse: false, text: "I feel comfortable around people." },
+  { n: 23, trait: "O", reverse: false, text: "I spend time reflecting on ideas and possibilities." },
+  { n: 24, trait: "A", reverse: false, text: "I generally take what people say at face value." },
+  { n: 25, trait: "C", reverse: false, text: "I come up with effective solutions when facing challenges." },
+  { n: 26, trait: "N", reverse: true, text: "I adapt easily when things change." },
+  { n: 27, trait: "E", reverse: false, text: "I enjoy being part of a group." },
+  { n: 28, trait: "O", reverse: false, text: "I believe art, music, and creativity are important." },
+  { n: 29, trait: "A", reverse: false, text: "I stick to my values and principles even when no one is watching." },
+  { n: 30, trait: "C", reverse: false, text: "I like to keep things organized and in order." },
+  { n: 31, trait: "N", reverse: false, text: "I get irritated easily." },
+  { n: 32, trait: "E", reverse: false, text: "I like involving others in what I am doing." },
+  { n: 33, trait: "O", reverse: false, text: "I notice beauty in things that others might overlook." },
+  { n: 34, trait: "A", reverse: false, text: "I try to be honest and transparent in everything I do." },
+  { n: 35, trait: "C", reverse: false, text: "I like working according to a clear plan." },
+  { n: 36, trait: "N", reverse: true, text: "I am not easily annoyed." },
+  { n: 37, trait: "E", reverse: true, text: "I prefer spending time alone." },
+  { n: 38, trait: "O", reverse: true, text: "I do not connect with art or creative expression." },
+  { n: 39, trait: "A", reverse: true, text: "I sometimes look for ways around rules I disagree with." },
+  { n: 40, trait: "C", reverse: true, text: "I often leave tasks or spaces in a disorganized state." },
+  { n: 41, trait: "N", reverse: false, text: "I get upset easily." },
+  { n: 42, trait: "E", reverse: false, text: "I enjoy social gatherings and events." },
+  { n: 43, trait: "O", reverse: false, text: "I enjoy experiences that engage my senses and sense of beauty." },
+  { n: 44, trait: "A", reverse: false, text: "I genuinely enjoy helping others." },
+  { n: 45, trait: "C", reverse: false, text: "I honor my commitments and responsibilities." },
+  { n: 46, trait: "N", reverse: false, text: "I am often in a bad mood." },
+  { n: 47, trait: "E", reverse: true, text: "I avoid crowded or noisy situations." },
+  { n: 48, trait: "O", reverse: true, text: "I do not seek out creative or artistic experiences." },
+  { n: 49, trait: "A", reverse: true, text: "I use flattery or charm to get what I want." },
+  { n: 50, trait: "C", reverse: true, text: "I am not bothered by mess or disorder." },
+  { n: 51, trait: "N", reverse: true, text: "I seldom feel down or blue." },
+  { n: 52, trait: "E", reverse: false, text: "I am comfortable taking the lead in group situations." },
+  { n: 53, trait: "O", reverse: false, text: "I experience my emotions strongly and deeply." },
+  { n: 54, trait: "A", reverse: false, text: "I anticipate what others need and try to help." },
+  { n: 55, trait: "C", reverse: false, text: "I keep my promises." },
+  { n: 56, trait: "N", reverse: true, text: "I feel comfortable with who I am." },
+  { n: 57, trait: "E", reverse: false, text: "I speak up and share my ideas." },
+  { n: 58, trait: "O", reverse: false, text: "I am good at picking up on how others are feeling." },
+  { n: 59, trait: "A", reverse: false, text: "I make others feel welcome and included." },
+  { n: 60, trait: "C", reverse: false, text: "I try to be honest even when it is not easy." },
+  { n: 61, trait: "N", reverse: false, text: "I worry that I will do or say the wrong thing." },
+  { n: 62, trait: "E", reverse: false, text: "I can persuade others when I believe in something." },
+  { n: 63, trait: "O", reverse: false, text: "I regularly reflect on my own motivations and inner life." },
+  { n: 64, trait: "A", reverse: true, text: "I tend to be dismissive of others' concerns." },
+  { n: 65, trait: "C", reverse: true, text: "I sometimes disregard commitments when it is convenient." },
+  { n: 66, trait: "N", reverse: false, text: "I feel nervous when I am the center of attention." },
+  { n: 67, trait: "E", reverse: true, text: "I tend to stay in the background in group situations." },
+  { n: 68, trait: "O", reverse: true, text: "I seldom get emotional." },
+  { n: 69, trait: "A", reverse: true, text: "I do not make much time for other people's concerns." },
+  { n: 70, trait: "C", reverse: true, text: "I do not always follow through on what I say I will do." },
+  { n: 71, trait: "N", reverse: false, text: "I only feel truly comfortable around people I know well." },
+  { n: 72, trait: "E", reverse: true, text: "I hold back my opinions even when I have something to say." },
+  { n: 73, trait: "O", reverse: false, text: "I prefer variety over doing the same things all the time." },
+  { n: 74, trait: "A", reverse: false, text: "I try to avoid unnecessary conflict." },
+  { n: 75, trait: "C", reverse: false, text: "I work hard toward goals that matter to me." },
+  { n: 76, trait: "N", reverse: true, text: "I am not easily embarrassed." },
+  { n: 77, trait: "E", reverse: false, text: "I am always on the go." },
+  { n: 78, trait: "O", reverse: false, text: "I enjoy discovering new places, people, and ideas." },
+  { n: 79, trait: "A", reverse: false, text: "I prefer working things out calmly rather than arguing." },
+  { n: 80, trait: "C", reverse: false, text: "I set high standards for myself." },
+  { n: 81, trait: "N", reverse: true, text: "I feel at ease in most social situations." },
+  { n: 82, trait: "E", reverse: false, text: "I can manage many things at the same time." },
+  { n: 83, trait: "O", reverse: false, text: "I enjoy starting new projects and exploring new directions." },
+  { n: 84, trait: "A", reverse: true, text: "I say sharp or cutting things when I am frustrated." },
+  { n: 85, trait: "C", reverse: false, text: "I put my full effort into the things I care about." },
+  { n: 86, trait: "N", reverse: false, text: "I often act before thinking about the consequences." },
+  { n: 87, trait: "E", reverse: false, text: "I react quickly to what is happening around me." },
+  { n: 88, trait: "O", reverse: true, text: "I prefer sticking with what I already know." },
+  { n: 89, trait: "A", reverse: true, text: "I tend to hold grudges." },
+  { n: 90, trait: "C", reverse: true, text: "I do just enough to get by." },
+  { n: 91, trait: "N", reverse: false, text: "I do things I later regret." },
+  { n: 92, trait: "E", reverse: true, text: "I prefer a relaxed and slower-paced way of living." },
+  { n: 93, trait: "O", reverse: true, text: "I dislike change and find it unsettling." },
+  { n: 94, trait: "A", reverse: true, text: "I can be confrontational when I feel challenged." },
+  { n: 95, trait: "C", reverse: true, text: "I am not strongly motivated to push myself further." },
+  { n: 96, trait: "N", reverse: false, text: "I have a hard time resisting impulses I know are unhelpful." },
+  { n: 97, trait: "E", reverse: true, text: "I like to let things unfold at their own pace." },
+  { n: 98, trait: "O", reverse: false, text: "I think most issues have more than one right answer." },
+  { n: 99, trait: "A", reverse: false, text: "I care deeply about people who are going through hard times." },
+  { n: 100, trait: "C", reverse: false, text: "I think carefully before making important decisions." },
+];
+
+/* ---------------- Scoring.js ---------------- */
+/**
+ * Peaceful Pathway scoring core. Pure logic: no spreadsheet or network access.
+ *
+ * Rules implemented here come from PP_Feedback_Content_Developer_Handoff
+ * (Read Me, Steps 1-4) and PP_Scoring_Template_v3:
+ *   - responses are whole numbers 1-5; reverse-keyed items score 6 - response
+ *   - trait score = average of its 20 items (kept here as an exact integer sum)
+ *   - Low < 2.65, Medium 2.65 to < 3.45, High >= 3.45
+ *   - rank traits by score, ties broken O, C, E, A, N
+ *   - main pair = ranks 1 and 2
+ *   - second pair = top trait + the trait in ranks 3-5 with the biggest level
+ *     gap from it (ties go to the higher-ranked trait; if no gaps, rank 3)
+ *   - closing = top trait at its level
+ *
+ * This module produces KEYS only. It never contains or generates feedback text.
+ */
+var PPScoring = (function () {
+  'use strict';
+
+  var TRAITS = ['O', 'C', 'E', 'A', 'N'];      // report order and tie-break order
+  var PAIR_ORDER = ['O', 'N', 'E', 'A', 'C'];  // order used inside pair lookup keys
+  var LEVELS = ['Low', 'Medium', 'High'];
+  var ITEMS_PER_TRAIT = 20;
+
+  // Cutoffs as whole-number sums of 20 items. Every possible 20-item average is
+  // a multiple of 0.05, so "average < 2.65" is exactly "sum <= 52" and
+  // "average < 3.45" is exactly "sum <= 68". Integers avoid rounding errors.
+  var LOW_MAX_SUM = 52;
+  var MEDIUM_MAX_SUM = 68;
+
+  function levelForSum(sum) {
+    if (sum <= LOW_MAX_SUM) return 'Low';
+    if (sum <= MEDIUM_MAX_SUM) return 'Medium';
+    return 'High';
+  }
+
+  function levelLetter(level) {
+    return level.charAt(0); // Low -> L, Medium -> M, High -> H
+  }
+
+  function levelRank(level) {
+    return LEVELS.indexOf(level); // Low 0, Medium 1, High 2
+  }
+
+  /** Make a form header or key text comparable (spaces, curly quotes, item 64 typo). */
+  function normalizeText(text) {
+    return String(text === null || text === undefined ? '' : text)
+      .replace(/[‘’ʼ]/g, "'")
+      .replace(/[“”]/g, '"')
+      .replace(/\s+/g, ' ')
+      .trim()
+      .replace(/others's/g, "others'"); // the live form prints "others's" in item 64
+  }
+
+  /**
+   * Find the 100 answer columns in a header row by matching item text.
+   * Returns { columns: [0-based index per item 1..100], missing: [item numbers],
+   * duplicates: [item numbers] }. Columns not in the key (name, grade, email,
+   * birth month, stray headers, scored columns) are ignored.
+   */
+  function locateItemColumns(headerRow) {
+    var byText = {};
+    for (var c = 0; c < headerRow.length; c++) {
+      var key = normalizeText(headerRow[c]);
+      if (key === '') continue;
+      (byText[key] = byText[key] || []).push(c);
+    }
+    var columns = [];
+    var missing = [];
+    var duplicates = [];
+    for (var i = 0; i < PP_ITEMS.length; i++) {
+      var found = byText[normalizeText(PP_ITEMS[i].text)] || [];
+      if (found.length === 0) {
+        missing.push(PP_ITEMS[i].n);
+        columns.push(-1);
+      } else if (found.length > 1) {
+        duplicates.push(PP_ITEMS[i].n);
+        columns.push(found[0]);
+      } else {
+        columns.push(found[0]);
+      }
+    }
+    return { columns: columns, missing: missing, duplicates: duplicates };
+  }
+
+  /** A response must be a whole number 1-5 (a number or a digit string). */
+  function parseAnswer(value) {
+    if (typeof value === 'number') {
+      return value === Math.floor(value) && value >= 1 && value <= 5 ? value : null;
+    }
+    if (typeof value === 'string' && /^\s*[1-5]\s*$/.test(value)) {
+      return parseInt(value, 10);
+    }
+    return null;
+  }
+
+  function pairKey(a, b, levels) {
+    var first = PAIR_ORDER.indexOf(a) < PAIR_ORDER.indexOf(b) ? a : b;
+    var second = first === a ? b : a;
+    return first + '(' + levelLetter(levels[first]) + ')+' +
+           second + '(' + levelLetter(levels[second]) + ')';
+  }
+
+  function closingKey(trait, levels) {
+    return trait + '(' + levelLetter(levels[trait]) + ')';
+  }
+
+  /**
+   * Score 100 raw answers (item 1 first). Throws an Error naming the problem if
+   * the input is not exactly 100 whole numbers from 1 to 5; it never guesses.
+   */
+  function score(answers) {
+    if (!answers || answers.length !== PP_ITEMS.length) {
+      throw new Error('Expected ' + PP_ITEMS.length + ' answers, got ' +
+                      (answers ? answers.length : 0));
+    }
+    var sums = { O: 0, C: 0, E: 0, A: 0, N: 0 };
+    var bad = [];
+    for (var i = 0; i < PP_ITEMS.length; i++) {
+      var value = parseAnswer(answers[i]);
+      if (value === null) {
+        bad.push('item ' + PP_ITEMS[i].n + ' ("' + answers[i] + '")');
+        continue;
+      }
+      sums[PP_ITEMS[i].trait] += PP_ITEMS[i].reverse ? 6 - value : value;
+    }
+    if (bad.length > 0) {
+      throw new Error('Answers must be whole numbers 1-5. Problem with: ' +
+                      bad.slice(0, 5).join(', ') + (bad.length > 5 ? ', and ' + (bad.length - 5) + ' more' : ''));
+    }
+
+    var averages = {};
+    var levels = {};
+    TRAITS.forEach(function (t) {
+      averages[t] = Math.round(sums[t] * 5) / 100; // sum / 20, exact to 2 decimals
+      levels[t] = levelForSum(sums[t]);
+    });
+
+    var ranking = TRAITS.slice().sort(function (a, b) {
+      return sums[b] - sums[a] || TRAITS.indexOf(a) - TRAITS.indexOf(b);
+    });
+
+    var top = ranking[0];
+    var partner = ranking[2];
+    var bestGap = Math.abs(levelRank(levels[top]) - levelRank(levels[partner]));
+    for (var r = 3; r < ranking.length; r++) {
+      var gap = Math.abs(levelRank(levels[top]) - levelRank(levels[ranking[r]]));
+      if (gap > bestGap) { // strictly greater: ties keep the higher-ranked trait
+        bestGap = gap;
+        partner = ranking[r];
+      }
+    }
+
+    return {
+      sums: sums,
+      averages: averages,
+      levels: levels,
+      ranking: ranking,
+      mainPairKey: pairKey(ranking[0], ranking[1], levels),
+      secondPairKey: pairKey(top, partner, levels),
+      closingKey: closingKey(top, levels)
+    };
+  }
+
+  /** First name = text before the first space in "first name and last initial". */
+  function firstNameFrom(value) {
+    var text = String(value === null || value === undefined ? '' : value)
+      .replace(/\s+/g, ' ').trim();
+    return text === '' ? '' : text.split(' ')[0];
+  }
+
+  /** Column headers written to the sheet, in order. */
+  var OUTPUT_HEADERS = (function () {
+    var headers = ['PP First Name'];
+    TRAITS.forEach(function (t) {
+      headers.push('PP ' + t + ' Sum', 'PP ' + t + ' Avg', 'PP ' + t + ' Level');
+    });
+    headers.push('PP Ranking', 'PP Main Pair Key', 'PP Second Pair Key',
+                 'PP Closing Key', 'PP Scoring Status');
+    return headers;
+  })();
+
+  /** Values matching OUTPUT_HEADERS for a successful score. */
+  function outputValues(result, firstName) {
+    var values = [firstName];
+    TRAITS.forEach(function (t) {
+      values.push(result.sums[t], result.averages[t], result.levels[t]);
+    });
+    values.push(result.ranking.join(' > '), result.mainPairKey,
+                result.secondPairKey, result.closingKey, 'OK');
+    return values;
+  }
+
+  /** Values matching OUTPUT_HEADERS for a row that could not be scored. */
+  function errorValues(firstName, message) {
+    var values = [firstName];
+    for (var i = 1; i < OUTPUT_HEADERS.length - 1; i++) values.push('');
+    values.push('ERROR: ' + message);
+    return values;
+  }
+
+  return {
+    TRAITS: TRAITS,
+    PAIR_ORDER: PAIR_ORDER,
+    LEVELS: LEVELS,
+    ITEMS_PER_TRAIT: ITEMS_PER_TRAIT,
+    LOW_MAX_SUM: LOW_MAX_SUM,
+    MEDIUM_MAX_SUM: MEDIUM_MAX_SUM,
+    OUTPUT_HEADERS: OUTPUT_HEADERS,
+    levelForSum: levelForSum,
+    normalizeText: normalizeText,
+    locateItemColumns: locateItemColumns,
+    parseAnswer: parseAnswer,
+    score: score,
+    firstNameFrom: firstNameFrom,
+    outputValues: outputValues,
+    errorValues: errorValues
+  };
+})();
+
+/* ---------------- Report.js ---------------- */
+/**
+ * Peaceful Pathway report assembler. Pure logic: no spreadsheet, Drive or network access.
+ *
+ * It turns the KEYS written by the scorer into an ordered set of report pieces, using
+ * ONLY text read from Shelly's content tabs (PP_Feedback_Content_Developer_Handoff).
+ * The one string that does not come from a tab is the opening pattern from Read Me
+ * Step 4e: "[First name], here's what makes you, you."
+ *
+ * Rules implemented (Read Me, Steps 3 and 4):
+ *   - Step 3: for O, C, E, A, N in that order: trait name, definition, level, label,
+ *     paragraph, Gifts, Growth Edge (tab: Initial Test).
+ *   - Step 4e: portrait = opening + main pair text + second pair text + closing line,
+ *     joined by single spaces. "Do not add, rewrite, or generate any other text."
+ *
+ * Nothing is guessed. A missing tab column, a missing or duplicate row, an empty text
+ * cell or an unknown key throws an Error that says what is wrong.
+ *
+ * Needs Scoring.js (PPScoring) loaded first.
+ */
+var PPReport = (function () {
+  'use strict';
+
+  var LEVELS = ['Low', 'Medium', 'High'];
+  var OPENING_SUFFIX = ", here's what makes you, you.";
+
+  function headerKey(text) {
+    return String(text === null || text === undefined ? '' : text)
+      .replace(/\s+/g, ' ').trim().toLowerCase();
+  }
+
+  /** Map each wanted header name to its column index; throw if absent or repeated. */
+  function columnsFor(rows, wanted, tabName) {
+    if (!rows || rows.length < 1) {
+      throw new Error('Content tab "' + tabName + '" is empty');
+    }
+    var header = rows[0].map(headerKey);
+    var cols = {};
+    wanted.forEach(function (name) {
+      var first = header.indexOf(headerKey(name));
+      if (first === -1) {
+        throw new Error('Content tab "' + tabName + '" has no "' + name + '" column');
+      }
+      if (header.indexOf(headerKey(name), first + 1) !== -1) {
+        throw new Error('Content tab "' + tabName + '" has more than one "' + name + '" column');
+      }
+      cols[name] = first;
+    });
+    return cols;
+  }
+
+  function isBlankRow(row) {
+    return row.every(function (c) { return String(c === null || c === undefined ? '' : c).trim() === ''; });
+  }
+
+  /** Exact cell text (never edited). Throws if the cell is empty. */
+  function textCell(row, cols, name, tabName, rowNumber) {
+    var value = row[cols[name]];
+    var text = value === null || value === undefined ? '' : String(value);
+    if (text.trim() === '') {
+      throw new Error('Content tab "' + tabName + '" row ' + rowNumber + ': "' + name + '" is empty');
+    }
+    return text;
+  }
+
+  function levelCell(row, cols, name, tabName, rowNumber) {
+    var level = textCell(row, cols, name, tabName, rowNumber).trim();
+    if (LEVELS.indexOf(level) === -1) {
+      throw new Error('Content tab "' + tabName + '" row ' + rowNumber + ': "' + name +
+                      '" must be Low, Medium or High (got "' + level + '")');
+    }
+    return level;
+  }
+
+  function levelLetter(level) { return level.charAt(0); }
+
+  function parseTraits(rows) {
+    var tab = 'Initial Test';
+    var cols = columnsFor(rows, ['Trait Code', 'Trait', 'Definition', 'Level', 'Label',
+                                 'Paragraph', 'Gifts', 'Growth Edge'], tab);
+    var traits = {};
+    for (var r = 1; r < rows.length; r++) {
+      var row = rows[r];
+      if (isBlankRow(row)) continue;
+      var n = r + 1;
+      var code = textCell(row, cols, 'Trait Code', tab, n).trim();
+      if (PPScoring.TRAITS.indexOf(code) === -1) {
+        throw new Error('Content tab "' + tab + '" row ' + n + ': unknown trait code "' + code + '"');
+      }
+      var level = levelCell(row, cols, 'Level', tab, n);
+      var name = textCell(row, cols, 'Trait', tab, n);
+      var definition = textCell(row, cols, 'Definition', tab, n);
+      var trait = traits[code] || (traits[code] = { name: name, definition: definition, levels: {} });
+      if (trait.name !== name || trait.definition !== definition) {
+        throw new Error('Content tab "' + tab + '" row ' + n + ': trait name or definition for ' +
+                        code + ' differs between its rows');
+      }
+      if (trait.levels[level]) {
+        throw new Error('Content tab "' + tab + '" row ' + n + ': ' + code + ' ' + level + ' appears twice');
+      }
+      trait.levels[level] = {
+        label: textCell(row, cols, 'Label', tab, n),
+        paragraph: textCell(row, cols, 'Paragraph', tab, n),
+        gifts: textCell(row, cols, 'Gifts', tab, n),
+        growthEdge: textCell(row, cols, 'Growth Edge', tab, n)
+      };
+    }
+    PPScoring.TRAITS.forEach(function (code) {
+      LEVELS.forEach(function (level) {
+        if (!traits[code] || !traits[code].levels[level]) {
+          throw new Error('Content tab "' + tab + '" has no row for ' + code + ' ' + level);
+        }
+      });
+    });
+    return traits;
+  }
+
+  function parsePortraits(rows) {
+    var tab = 'Combination Portraits';
+    var cols = columnsFor(rows, ['Lookup Key', 'Type Name', 'Text'], tab);
+    var portraits = {};
+    for (var r = 1; r < rows.length; r++) {
+      var row = rows[r];
+      if (isBlankRow(row)) continue;
+      var n = r + 1;
+      var key = textCell(row, cols, 'Lookup Key', tab, n).trim();
+      if (portraits[key]) {
+        throw new Error('Content tab "' + tab + '" row ' + n + ': key ' + key + ' appears twice');
+      }
+      portraits[key] = {
+        typeName: textCell(row, cols, 'Type Name', tab, n),
+        text: textCell(row, cols, 'Text', tab, n)
+      };
+    }
+    // Every pair the scorer can produce must exist, so a gap shows up at load time.
+    var P = PPScoring.PAIR_ORDER;
+    for (var i = 0; i < P.length; i++) {
+      for (var j = i + 1; j < P.length; j++) {
+        LEVELS.forEach(function (a) {
+          LEVELS.forEach(function (b) {
+            var key = P[i] + '(' + levelLetter(a) + ')+' + P[j] + '(' + levelLetter(b) + ')';
+            if (!portraits[key]) {
+              throw new Error('Content tab "' + tab + '" has no row for ' + key);
+            }
+          });
+        });
+      }
+    }
+    return portraits;
+  }
+
+  function parseClosings(rows) {
+    var tab = 'Portrait Closings';
+    var cols = columnsFor(rows, ['Highest Trait Code', 'Level', 'Closing Line'], tab);
+    var closings = {};
+    for (var r = 1; r < rows.length; r++) {
+      var row = rows[r];
+      if (isBlankRow(row)) continue;
+      var n = r + 1;
+      var code = textCell(row, cols, 'Highest Trait Code', tab, n).trim();
+      if (PPScoring.TRAITS.indexOf(code) === -1) {
+        throw new Error('Content tab "' + tab + '" row ' + n + ': unknown trait code "' + code + '"');
+      }
+      var key = code + '(' + levelLetter(levelCell(row, cols, 'Level', tab, n)) + ')';
+      if (closings[key]) {
+        throw new Error('Content tab "' + tab + '" row ' + n + ': ' + key + ' appears twice');
+      }
+      closings[key] = textCell(row, cols, 'Closing Line', tab, n);
+    }
+    PPScoring.TRAITS.forEach(function (code) {
+      LEVELS.forEach(function (level) {
+        var key = code + '(' + levelLetter(level) + ')';
+        if (!closings[key]) {
+          throw new Error('Content tab "' + tab + '" has no row for ' + key);
+        }
+      });
+    });
+    return closings;
+  }
+
+  /**
+   * Read the three content tabs (each an array of rows, header row first, as returned
+   * by Range.getValues()) into one lookup structure. Columns are found by header name.
+   * Text is kept exactly as written.
+   */
+  function parseContent(tabs) {
+    return {
+      traits: parseTraits(tabs.initialTest),
+      portraits: parsePortraits(tabs.portraits),
+      closings: parseClosings(tabs.closings)
+    };
+  }
+
+  function lookup(table, key, what) {
+    if (typeof key !== 'string' || !Object.prototype.hasOwnProperty.call(table, key)) {
+      throw new Error('No ' + what + ' text for key "' + key + '"');
+    }
+    return table[key];
+  }
+
+  /**
+   * Assemble one report from scorer output.
+   * input: { firstName, levels: {O,C,E,A,N: 'Low'|'Medium'|'High'},
+   *          mainPairKey, secondPairKey, closingKey }
+   * Returns { firstName, traits: [...in O,C,E,A,N order], portrait: { opening,
+   *   mainPair, secondPair, closing, text } }. Throws if anything is missing.
+   */
+  function assemble(content, input) {
+    var firstName = input && typeof input.firstName === 'string' ? input.firstName.trim() : '';
+    if (firstName === '') {
+      throw new Error('First name is missing, so the opening line cannot be written');
+    }
+
+    var traits = PPScoring.TRAITS.map(function (code) {
+      var level = input.levels ? input.levels[code] : undefined;
+      if (LEVELS.indexOf(level) === -1) {
+        throw new Error('Level for ' + code + ' must be Low, Medium or High (got "' + level + '")');
+      }
+      var trait = content.traits[code];
+      var texts = trait.levels[level];
+      return {
+        code: code,
+        name: trait.name,
+        definition: trait.definition,
+        level: level,
+        label: texts.label,
+        paragraph: texts.paragraph,
+        gifts: texts.gifts,
+        growthEdge: texts.growthEdge
+      };
+    });
+
+    var main = lookup(content.portraits, input.mainPairKey, 'main pair portrait');
+    var second = lookup(content.portraits, input.secondPairKey, 'second pair portrait');
+    var closingText = lookup(content.closings, input.closingKey, 'closing line');
+
+    var opening = firstName + OPENING_SUFFIX;
+    return {
+      firstName: firstName,
+      traits: traits,
+      portrait: {
+        opening: opening,
+        mainPair: { key: input.mainPairKey, typeName: main.typeName, text: main.text },
+        secondPair: { key: input.secondPairKey, typeName: second.typeName, text: second.text },
+        closing: { key: input.closingKey, text: closingText },
+        text: [opening, main.text, second.text, closingText].join(' ')
+      }
+    };
+  }
+
+  /* ---------- template placeholders (used by the Docs layer) ---------- */
+
+  // Per-trait placeholders look like {{O_NAME}}, {{C_GROWTH_EDGE}}. Trait order is fixed
+  // (O, C, E, A, N), so a template simply has five blocks.
+  var TRAIT_FIELDS = [
+    ['NAME', 'name'], ['DEFINITION', 'definition'], ['LEVEL', 'level'], ['LABEL', 'label'],
+    ['PARAGRAPH', 'paragraph'], ['GIFTS', 'gifts'], ['GROWTH_EDGE', 'growthEdge']
+  ];
+
+  /** Every placeholder a template may use. */
+  function placeholderNames() {
+    var names = ['{{FIRST_NAME}}', '{{OPENING}}', '{{MAIN_PAIR_TEXT}}', '{{SECOND_PAIR_TEXT}}',
+                 '{{CLOSING}}', '{{PORTRAIT}}'];
+    PPScoring.TRAITS.forEach(function (code) {
+      TRAIT_FIELDS.forEach(function (f) { names.push('{{' + code + '_' + f[0] + '}}'); });
+    });
+    return names;
+  }
+
+  /** Map each placeholder to its text for one assembled report. Text is passed through unchanged. */
+  function placeholders(report) {
+    var map = {
+      '{{FIRST_NAME}}': report.firstName,
+      '{{OPENING}}': report.portrait.opening,
+      '{{MAIN_PAIR_TEXT}}': report.portrait.mainPair.text,
+      '{{SECOND_PAIR_TEXT}}': report.portrait.secondPair.text,
+      '{{CLOSING}}': report.portrait.closing.text,
+      '{{PORTRAIT}}': report.portrait.text
+    };
+    report.traits.forEach(function (t) {
+      TRAIT_FIELDS.forEach(function (f) { map['{{' + t.code + '_' + f[0] + '}}'] = t[f[1]]; });
+    });
+    return map;
+  }
+
+  /** Every {{...}} token found in a piece of text (document text), in order. */
+  function findPlaceholders(text) {
+    return String(text === null || text === undefined ? '' : text).match(/\{\{[^{}]*\}\}/g) || [];
+  }
+
+  /** Tokens in the text that are not a known placeholder (typos in a template), without repeats. */
+  function unknownPlaceholders(text) {
+    var known = placeholderNames();
+    var seen = {};
+    return findPlaceholders(text).filter(function (token) {
+      if (known.indexOf(token) !== -1 || seen[token]) { return false; }
+      seen[token] = true;
+      return true;
+    });
+  }
+
+  return {
+    LEVELS: LEVELS,
+    OPENING_SUFFIX: OPENING_SUFFIX,
+    parseContent: parseContent,
+    assemble: assemble,
+    placeholderNames: placeholderNames,
+    placeholders: placeholders,
+    findPlaceholders: findPlaceholders,
+    unknownPlaceholders: unknownPlaceholders
+  };
+})();
+
+/* ---------------- ReportDoc.js ---------------- */
+/**
+ * Google Docs / Drive layer for the report PDFs (bound Apps Script).
+ *
+ * This is the ONLY file that touches Drive or Docs. It makes no network requests and
+ * sends no email. Per report it: copies a template Doc, swaps each {{PLACEHOLDER}} for
+ * the exact text from PPReport, exports the copy as a PDF into one folder, and trashes
+ * the working copy. It adds no wording: the only static text it ever writes is in the
+ * placeholder template below ("Gifts" and "Growth Edge", Shelly's own column names).
+ *
+ * Needs the broader Drive and Docs permissions listed in appsscript.reports.json.
+ */
+var PP_REPORT = {
+  LINK_HEADER: 'PP Report Link',
+  STATUS_HEADER: 'PP Report Status',
+  PROP_FOLDER: 'PP_REPORT_FOLDER_ID',
+  PROP_TEMPLATE: 'PP_REPORT_TEMPLATE_ID',
+  PROP_AUTO: 'PP_REPORT_AUTO',
+  FOLDER_NAME: 'Peaceful Pathway Reports',
+  TEMPLATE_NAME: 'PP Report Template (placeholders)',
+  PDF_NAME_SUFFIX: ' - Peaceful Pathway Report',
+  // Stop starting new reports after this long so one run stays inside Apps Script's
+  // 6-minute limit; anything left stays PENDING for "Generate pending reports".
+  TIME_BUDGET_MS: 270000,
+  GREEN: '#1F5C3E',    // student materials (Read Me, Brand)
+  FONT: 'Poppins',
+  // Content tabs, copied from Shelly's workbook into the same sheet under her tab names.
+  CONTENT_TABS: {
+    initialTest: 'Initial Test',
+    portraits: 'Combination Portraits',
+    closings: 'Portrait Closings'
+  },
+  // The only static words in the placeholder template: her own column names.
+  LABEL_GIFTS: 'Gifts',
+  LABEL_GROWTH_EDGE: 'Growth Edge'
+};
+
+function ppEscapeRegex_(text) {
+  return String(text).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+/**
+ * Replace every occurrence of a placeholder with the given text, keeping the
+ * placeholder's formatting. Refuses text containing "$" or "\" because replaceText
+ * treats those as special; it fails loudly rather than mangle her wording.
+ */
+function ppReplaceLiteral_(body, token, value) {
+  var text = String(value);
+  if (/[$\\]/.test(text)) {
+    throw new Error('The text for ' + token + ' contains a "$" or "\\" character, which the ' +
+                    'template filler cannot place safely');
+  }
+  body.replaceText(ppEscapeRegex_(token), text);
+}
+
+/* ---------- folder and placeholder template ---------- */
+
+/** Create the (private) report folder in the signed-in account's My Drive. */
+function ppCreateFolder_(name) {
+  var folder = DriveApp.createFolder(name);
+  return { id: folder.getId(), url: folder.getUrl() };
+}
+
+function ppTemplateStyles_() {
+  var A = DocumentApp.Attribute;
+  function style(size, bold, italic, color) {
+    var s = {};
+    s[A.FONT_FAMILY] = PP_REPORT.FONT;
+    s[A.FONT_SIZE] = size;
+    s[A.BOLD] = bold;
+    s[A.ITALIC] = italic;
+    s[A.FOREGROUND_COLOR] = color;
+    return s;
+  }
+  return {
+    traitName: style(18, true, false, PP_REPORT.GREEN),
+    definition: style(10, false, true, '#555555'),
+    level: style(12, true, false, PP_REPORT.GREEN),
+    label: style(12, true, false, '#222222'),
+    subheading: style(11, true, false, PP_REPORT.GREEN),
+    body: style(11, false, false, '#222222')
+  };
+}
+
+/** The placeholder template: five trait blocks in O, C, E, A, N order, then the portrait. */
+function ppTemplateParagraphs_() {
+  var paragraphs = [];
+  PPScoring.TRAITS.forEach(function (code) {
+    var p = function (field) { return '{{' + code + '_' + field + '}}'; };
+    paragraphs.push([p('NAME'), 'traitName']);
+    paragraphs.push([p('DEFINITION'), 'definition']);
+    paragraphs.push([p('LEVEL'), 'level']);
+    paragraphs.push([p('LABEL'), 'label']);
+    paragraphs.push([p('PARAGRAPH'), 'body']);
+    paragraphs.push([PP_REPORT.LABEL_GIFTS, 'subheading']);
+    paragraphs.push([p('GIFTS'), 'body']);
+    paragraphs.push([PP_REPORT.LABEL_GROWTH_EDGE, 'subheading']);
+    paragraphs.push([p('GROWTH_EDGE'), 'body']);
+  });
+  paragraphs.push(['{{PORTRAIT}}', 'body']);
+  return paragraphs;
+}
+
+/**
+ * Build the plain placeholder template (green, Poppins) in the report folder and return
+ * its id. Shelly's designed template can replace it later with no code change.
+ */
+function ppBuildTemplate_(folderId) {
+  var doc = DocumentApp.create(PP_REPORT.TEMPLATE_NAME);
+  var body = doc.getBody();
+  var styles = ppTemplateStyles_();
+  body.clear();
+  ppTemplateParagraphs_().forEach(function (entry) {
+    body.appendParagraph(entry[0]).setAttributes(styles[entry[1]]);
+  });
+  doc.saveAndClose();
+  var id = doc.getId();
+  DriveApp.getFileById(id).moveTo(DriveApp.getFolderById(folderId));
+  return id;
+}
+
+/** Unrecognised {{...}} tokens in a template Doc (typos that would print literally). */
+function ppTemplateProblems_(templateId) {
+  var doc = DocumentApp.openById(templateId);
+  return PPReport.unknownPlaceholders(doc.getBody().getText());
+}
+
+/* ---------- rendering ---------- */
+
+/**
+ * Make one PDF: copy the template, fill it from the assembled report, export to PDF in
+ * the folder, trash the working copy. Returns { id, url }. Throws (and leaves nothing
+ * behind but a trashed copy) if anything goes wrong or a placeholder is left unfilled.
+ */
+function ppRenderPdf_(report, pdfName, templateId, folderId) {
+  var folder = DriveApp.getFolderById(folderId);
+  var copy = DriveApp.getFileById(templateId).makeCopy('PP working copy - delete me', folder);
+  var copyId = copy.getId();
+  try {
+    var doc = DocumentApp.openById(copyId);
+    var body = doc.getBody();
+    var values = PPReport.placeholders(report);
+    Object.keys(values).forEach(function (token) { ppReplaceLiteral_(body, token, values[token]); });
+    var leftover = PPReport.findPlaceholders(body.getText());
+    if (leftover.length > 0) {
+      throw new Error('The template still has unfilled placeholder(s): ' + leftover.slice(0, 5).join(', '));
+    }
+    doc.saveAndClose();
+    var blob = DriveApp.getFileById(copyId).getAs('application/pdf').setName(pdfName + '.pdf');
+    var file = folder.createFile(blob);
+    return { id: file.getId(), url: file.getUrl() };
+  } finally {
+    try { DriveApp.getFileById(copyId).setTrashed(true); } catch (ignore) { /* already gone */ }
+  }
+}
+
+/** Move the old report PDF behind a stored link to the trash. Never throws. */
+function ppTrashByUrl_(url) {
+  var match = /\/d\/([A-Za-z0-9_-]+)/.exec(String(url));
+  if (!match) { return false; }
+  try {
+    DriveApp.getFileById(match[1]).setTrashed(true);
+    return true;
+  } catch (ignore) {
+    return false;
+  }
+}
+
+/* ---------------- ReportSheet.js ---------------- */
+/**
+ * Sheet side of report generation (bound Apps Script). Optional: nothing here runs
+ * until someone chooses "Set up report folder and template" from the menu.
+ *
+ * Each response row carries a report status in "PP Report Status" and the PDF link in
+ * "PP Report Link" (next to each other, after the scorer's columns):
+ *   PENDING  scored OK, report not made yet (or the row was re-scored: it will be replaced)
+ *   MAKING   a run has claimed the row and is making the PDF
+ *   OK       report made; the link is in "PP Report Link"
+ *   ERROR: ... the report could not be made; the reason follows
+ *   SKIPPED: scoring error   the row did not score, so there is nothing to report on
+ *
+ * Re-scoring a row marks it PENDING; making the new PDF then moves the old one to the
+ * trash and updates the link. Settings live in the sheet's document properties.
+ */
+
+/* ---------- settings ---------- */
+
+/** Report settings; never throws (no settings means "not set up"). */
+function ppReportSettings_() {
+  var out = { folderId: '', templateId: '', auto: false, configured: false };
+  try {
+    var props = PropertiesService.getDocumentProperties();
+    out.folderId = props.getProperty(PP_REPORT.PROP_FOLDER) || '';
+    out.templateId = props.getProperty(PP_REPORT.PROP_TEMPLATE) || '';
+    out.auto = props.getProperty(PP_REPORT.PROP_AUTO) === 'on';
+  } catch (err) {
+    return { folderId: '', templateId: '', auto: false, configured: false };
+  }
+  out.configured = out.folderId !== '' && out.templateId !== '';
+  return out;
+}
+
+/** One-line summary of a generation run, for dialogs. */
+function ppReportSummary_(result) {
+  var text = 'Reports: ' + result.made + ' made, ' + result.errors + ' with errors';
+  if (result.remaining > 0) {
+    text += ', ' + result.remaining + ' still pending (choose "Generate pending reports" to continue)';
+  }
+  return text + '. See the "PP Report Status" column.';
+}
+
+function ppStatusIsRetriable_(status) {
+  return status === 'PENDING' || status === 'MAKING' || status.indexOf('ERROR') === 0;
+}
+
+/* ---------- content tabs ---------- */
+
+/** Read Shelly's wording from the three content tabs in this sheet. */
+function ppLoadContent_() {
+  var spreadsheet = SpreadsheetApp.getActive();
+  function rowsOf(tabName) {
+    var tab = spreadsheet.getSheetByName(tabName);
+    if (!tab) {
+      throw new Error('Content tab "' + tabName + '" not found. Copy it from the handoff workbook ' +
+                      'into this sheet, keeping the same tab name.');
+    }
+    return tab.getDataRange().getValues();
+  }
+  return PPReport.parseContent({
+    initialTest: rowsOf(PP_REPORT.CONTENT_TABS.initialTest),
+    portraits: rowsOf(PP_REPORT.CONTENT_TABS.portraits),
+    closings: rowsOf(PP_REPORT.CONTENT_TABS.closings)
+  });
+}
+
+/* ---------- columns ---------- */
+
+function ppReportColumns_(sheet) {
+  return ppEnsureColumns_(sheet, [PP_REPORT.LINK_HEADER, PP_REPORT.STATUS_HEADER]);
+}
+
+/** 0-based column indexes of the scorer's output that a report needs. Throws if any is missing. */
+function ppReportInputColumns_(header) {
+  function need(name) {
+    var idx = header.indexOf(name);
+    if (idx < 0) {
+      throw new Error('Column "' + name + '" not found. Score the rows first (Re-score all rows).');
+    }
+    return idx;
+  }
+  var cols = {
+    firstName: need('PP First Name'),
+    scoringStatus: need('PP Scoring Status'),
+    mainPairKey: need('PP Main Pair Key'),
+    secondPairKey: need('PP Second Pair Key'),
+    closingKey: need('PP Closing Key'),
+    levels: {},
+    name: ppFindNameColumn_(header)
+  };
+  PPScoring.TRAITS.forEach(function (t) { cols.levels[t] = need('PP ' + t + ' Level'); });
+  return cols;
+}
+
+function ppPdfName_(nameCell, firstName) {
+  var name = String(nameCell === null || nameCell === undefined ? '' : nameCell)
+    .replace(/[\u0000-\u001f\u007f]/g, ' ').replace(/\s+/g, ' ').trim();
+  if (name === '') { name = firstName; }
+  return name.slice(0, 100) + PP_REPORT.PDF_NAME_SUFFIX;
+}
+
+/* ---------- status flow ---------- */
+
+/**
+ * After scoring: mark scored rows PENDING (or, with onlyBlank, only rows that have no
+ * report status yet), and mark rows that did not score as skipped. Leaves links alone.
+ */
+function ppMarkReportsPending_(sheet, firstRow, lastRow, onlyBlank) {
+  if (firstRow < 2) { firstRow = 2; }
+  if (lastRow < firstRow) { return 0; }
+  var cols = ppReportColumns_(sheet);
+  var header = ppReadHeader_(sheet);
+  var scoringCol = header.indexOf('PP Scoring Status');
+  if (scoringCol < 0) { return 0; }
+  var count = lastRow - firstRow + 1;
+  var scoring = sheet.getRange(firstRow, scoringCol + 1, count, 1).getValues();
+  var current = sheet.getRange(firstRow, cols[1], count, 1).getValues();
+  var marked = 0;
+  var out = scoring.map(function (s, i) {
+    var scoringStatus = String(s[0]);
+    var existing = String(current[i][0]);
+    if (scoringStatus === '') { return [existing]; }
+    if (scoringStatus !== 'OK') { return ['SKIPPED: scoring error']; }
+    if (onlyBlank && existing !== '' && existing.indexOf('SKIPPED') !== 0) { return [existing]; }
+    marked++;
+    return ['PENDING'];
+  });
+  sheet.getRange(firstRow, cols[1], count, 1).setValues(out);
+  return marked;
+}
+
+/** Wrapper used by Sheet.js after scoring: does nothing until reports are set up. */
+function ppReportsMarkPending_(sheet, firstRow, lastRow) {
+  if (!ppReportSettings_().configured) { return; }
+  ppMarkReportsPending_(sheet, firstRow, lastRow, false);
+}
+
+/** Take a row from `expected` to MAKING under a brief lock; false if it changed or the lock timed out. */
+function ppClaimRow_(sheet, rowNumber, statusCol, expected) {
+  var lock = LockService.getScriptLock();
+  try {
+    lock.waitLock(30000);
+  } catch (err) {
+    return false;
+  }
+  try {
+    var cell = sheet.getRange(rowNumber, statusCol, 1, 1);
+    if (String(cell.getValues()[0][0]) !== expected) { return false; }
+    cell.setValues([['MAKING']]);
+    return true;
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+/**
+ * Make the PDF for each wanted row in firstRow..lastRow. Wanted rows are PENDING ones, and
+ * with opts.retry also MAKING and ERROR ones. Each row is written as soon as it finishes,
+ * so a run that stops early loses nothing. Returns { made, errors, remaining }.
+ * Throws (before touching any row) if reports are not set up or the setup is broken.
+ */
+function ppGenerateReports_(sheet, firstRow, lastRow, opts) {
+  opts = opts || {};
+  var settings = ppReportSettings_();
+  if (!settings.configured) {
+    throw new Error('Reports are not set up yet. Use the menu: Peaceful Pathway > Set up report folder and template.');
+  }
+  if (firstRow < 2) { firstRow = 2; }
+  var result = { made: 0, errors: 0, remaining: 0 };
+  if (lastRow < firstRow) { return result; }
+
+  var cols = ppReportColumns_(sheet);
+  var linkCol = cols[0];
+  var statusCol = cols[1];
+  var header = ppReadHeader_(sheet);
+  var idx = ppReportInputColumns_(header);
+  var count = lastRow - firstRow + 1;
+  var data = sheet.getRange(firstRow, 1, count, sheet.getLastColumn()).getValues();
+
+  var wanted = [];
+  data.forEach(function (row, i) {
+    var status = String(row[statusCol - 1]);
+    if (status === 'PENDING' || (opts.retry && ppStatusIsRetriable_(status))) {
+      wanted.push({ row: row, number: firstRow + i, status: status });
+    }
+  });
+  if (wanted.length === 0) { return result; }
+
+  var content = ppLoadContent_();
+  var problems = ppTemplateProblems_(settings.templateId);
+  if (problems.length > 0) {
+    throw new Error('The report template has placeholder(s) that are not recognised: ' + problems.join(', '));
+  }
+
+  var started = new Date().getTime();
+  wanted.forEach(function (item) {
+    if (new Date().getTime() - started > PP_REPORT.TIME_BUDGET_MS ||
+        !ppClaimRow_(sheet, item.number, statusCol, item.status)) {
+      result.remaining++;
+      return;
+    }
+    try {
+      var levels = {};
+      PPScoring.TRAITS.forEach(function (t) { levels[t] = item.row[idx.levels[t]]; });
+      var firstName = String(item.row[idx.firstName]);
+      var report = PPReport.assemble(content, {
+        firstName: firstName,
+        levels: levels,
+        mainPairKey: item.row[idx.mainPairKey],
+        secondPairKey: item.row[idx.secondPairKey],
+        closingKey: item.row[idx.closingKey]
+      });
+      var nameCell = idx.name >= 0 ? item.row[idx.name] : '';
+      var made = ppRenderPdf_(report, ppPdfName_(nameCell, firstName), settings.templateId, settings.folderId);
+      var oldLink = String(item.row[linkCol - 1] || '');
+      ppWriteColumns_(sheet, item.number, [linkCol, statusCol], [[made.url, 'OK']]);
+      if (oldLink !== '' && oldLink !== made.url) { ppTrashByUrl_(oldLink); }
+      result.made++;
+    } catch (err) {
+      ppWriteColumns_(sheet, item.number, [statusCol], [['ERROR: ' + err.message]]);
+      result.errors++;
+    }
+  });
+  return result;
+}
+
+/**
+ * Wrapper used by Sheet.js after scoring: makes the reports for the just-scored rows if
+ * automatic reports are on. A setup-level failure is written into the rows' status
+ * instead of being lost. Returns the run result, or null if nothing was attempted.
+ */
+function ppReportsGenerate_(sheet, firstRow, lastRow) {
+  var settings = ppReportSettings_();
+  if (!settings.configured || !settings.auto) { return null; }
+  try {
+    return ppGenerateReports_(sheet, firstRow, lastRow);
+  } catch (err) {
+    var cols = ppReportColumns_(sheet);
+    var count = lastRow - firstRow + 1;
+    var range = sheet.getRange(firstRow, cols[1], count, 1);
+    var flagged = range.getValues().map(function (r) {
+      return [String(r[0]) === 'PENDING' ? 'ERROR: ' + err.message : r[0]];
+    });
+    range.setValues(flagged);
+    return { made: 0, errors: flagged.filter(function (r) { return String(r[0]).indexOf('ERROR') === 0; }).length, remaining: 0 };
+  }
+}
+
+/* ---------- menu actions ---------- */
+
+/** Menu: create the (private) report folder and the placeholder template. Safe to repeat. */
+function setUpReports() {
+  var ui = SpreadsheetApp.getUi();
+  var props = PropertiesService.getDocumentProperties();
+  var lines = [];
+  var folderId = props.getProperty(PP_REPORT.PROP_FOLDER);
+  if (!folderId) {
+    var folder = ppCreateFolder_(PP_REPORT.FOLDER_NAME);
+    folderId = folder.id;
+    props.setProperty(PP_REPORT.PROP_FOLDER, folderId);
+    lines.push('Created the report folder "' + PP_REPORT.FOLDER_NAME + '" (private to this account until you share it):');
+    lines.push(folder.url);
+  } else {
+    lines.push('The report folder is already set up.');
+  }
+  if (!props.getProperty(PP_REPORT.PROP_TEMPLATE)) {
+    props.setProperty(PP_REPORT.PROP_TEMPLATE, ppBuildTemplate_(folderId));
+    lines.push('Created a plain placeholder template in that folder. Use "Use a different report template" to switch to a designed one.');
+  } else {
+    lines.push('A report template is already set up.');
+  }
+  lines.push('Next: make sure the three content tabs (' +
+             [PP_REPORT.CONTENT_TABS.initialTest, PP_REPORT.CONTENT_TABS.portraits, PP_REPORT.CONTENT_TABS.closings].join(', ') +
+             ') are in this sheet, then "Generate pending reports". Automatic reports are off until you turn them on.');
+  ui.alert('Report setup', lines.join('\n'), ui.ButtonSet.OK);
+}
+
+/** Menu: point reports at a designed template Doc (paste its link). */
+function chooseReportTemplate() {
+  var ui = SpreadsheetApp.getUi();
+  var answer = ui.prompt('Use a different report template',
+    'Paste the link to the template Google Doc. It may only use the placeholders listed in the README.',
+    ui.ButtonSet.OK_CANCEL);
+  if (answer.getSelectedButton() !== ui.Button.OK) { return; }
+  var match = /[-\w]{25,}/.exec(answer.getResponseText());
+  if (!match) {
+    ui.alert('That does not look like a Google Doc link. Nothing was changed.');
+    return;
+  }
+  var problems;
+  try {
+    problems = ppTemplateProblems_(match[0]);
+  } catch (err) {
+    ui.alert('Could not open that Doc: ' + err.message + '\nNothing was changed.');
+    return;
+  }
+  if (problems.length > 0) {
+    ui.alert('The template has placeholder(s) that are not recognised: ' + problems.join(', ') +
+             '\nNothing was changed.');
+    return;
+  }
+  PropertiesService.getDocumentProperties().setProperty(PP_REPORT.PROP_TEMPLATE, match[0]);
+  ui.alert('The report template was updated. New reports will use it.');
+}
+
+/** Menu: turn automatic report-making on or off. */
+function toggleAutoReports() {
+  var ui = SpreadsheetApp.getUi();
+  var settings = ppReportSettings_();
+  if (!settings.configured) {
+    ui.alert('Set up the report folder and template first.');
+    return;
+  }
+  var turnOn = !settings.auto;
+  PropertiesService.getDocumentProperties().setProperty(PP_REPORT.PROP_AUTO, turnOn ? 'on' : 'off');
+  ui.alert(turnOn
+    ? 'Automatic reports are ON. A report is made for each new response right after it is scored.'
+    : 'Automatic reports are OFF. Use "Generate pending reports" to make them.');
+}
+
+/** Menu: make every report that is still PENDING (and retry ones that failed). */
+function generatePendingReports() {
+  var ui = SpreadsheetApp.getUi();
+  var sheet = ppGetResponsesSheet_();
+  var lastRow = sheet.getLastRow();
+  if (lastRow < 2) {
+    ui.alert('There are no responses yet.');
+    return;
+  }
+  try {
+    var backfilled = ppMarkReportsPending_(sheet, 2, lastRow, true);
+    var result = ppGenerateReports_(sheet, 2, lastRow, { retry: true });
+    ui.alert(ppReportSummary_(result) + (backfilled > 0 ? ' (' + backfilled + ' scored row(s) had no report yet.)' : ''));
+  } catch (err) {
+    ui.alert('Could not make reports: ' + err.message);
+  }
+}
+
+/* ---------------- Sheet.js ---------------- */
+/**
+ * Google Sheets glue for the Peaceful Pathway scorer (bound Apps Script).
+ *
+ * What it does: when a new form response arrives (or when "Re-score all rows"
+ * is chosen), it scores the row and writes the keys, scores and levels into
+ * columns at the end of the same tab. It only ever writes into its own
+ * "PP ..." columns. It never edits answers or any other column, never sends
+ * email, and makes no network requests. Documents and Drive are touched only by
+ * ReportDoc.js, and only if the optional report step has been set up.
+ *
+ * Nothing here runs until someone chooses "Install auto-scoring trigger" from
+ * the Peaceful Pathway menu in the sheet.
+ */
+var PP_CONFIG = {
+  SHEET_NAME: 'Form Responses 1',
+  MENU_TITLE: 'Peaceful Pathway',
+  NAME_HEADER_PREFIX: 'your first name',
+  TRIGGER_HANDLER: 'handleFormSubmit'
+};
+
+/* ---------- helpers (trailing underscore = private in Apps Script) ---------- */
+
+function ppReadHeader_(sheet) {
+  var lastCol = sheet.getLastColumn();
+  return lastCol > 0 ? sheet.getRange(1, 1, 1, lastCol).getValues()[0] : [];
+}
+
+function ppFindNameColumn_(header) {
+  for (var c = 0; c < header.length; c++) {
+    if (PPScoring.normalizeText(header[c]).toLowerCase().indexOf(PP_CONFIG.NAME_HEADER_PREFIX) === 0) {
+      return c;
+    }
+  }
+  return -1;
+}
+
+/** Plain-language description of a header problem, or '' when the headers are fine. */
+function ppSetupProblem_(layout) {
+  var parts = [];
+  if (layout.missing.length > 0) {
+    parts.push('form headers do not match the answer key; missing item(s): ' + layout.missing.join(', '));
+  }
+  if (layout.duplicates.length > 0) {
+    parts.push('duplicate header(s) for item(s): ' + layout.duplicates.join(', '));
+  }
+  return parts.join('; ');
+}
+
+/**
+ * Make sure every wanted header exists, adding any that are missing after the
+ * last used column. Returns the 1-based column number of each header, in the
+ * order given. Safe to call repeatedly.
+ */
+function ppEnsureColumns_(sheet, wanted) {
+  var lastCol = sheet.getLastColumn();
+  var header = ppReadHeader_(sheet);
+  var cols = [];
+  var missing = [];
+  wanted.forEach(function (h) {
+    var idx = header.indexOf(h);
+    if (idx < 0) { missing.push(h); }
+    cols.push(idx < 0 ? null : idx + 1);
+  });
+  if (missing.length === 0) { return cols; }
+
+  var firstNew = lastCol + 1;
+  var lastNeeded = lastCol + missing.length;
+  var maxCols = sheet.getMaxColumns();
+  if (lastNeeded > maxCols) {
+    sheet.insertColumnsAfter(maxCols, lastNeeded - maxCols);
+  }
+  sheet.getRange(1, firstNew, 1, missing.length).setValues([missing]);
+  var k = 0;
+  for (var i = 0; i < cols.length; i++) {
+    if (cols[i] === null) { cols[i] = firstNew + k; k++; }
+  }
+  return cols;
+}
+
+/** The scorer's "PP ..." output columns (see PPScoring.OUTPUT_HEADERS). */
+function ppEnsureOutputColumns_(sheet) {
+  return ppEnsureColumns_(sheet, PPScoring.OUTPUT_HEADERS);
+}
+
+/** Write rows of values into the given (1-based) columns, one block per run of adjacent columns. */
+function ppWriteColumns_(sheet, firstRow, cols, rows) {
+  var i = 0;
+  while (i < cols.length) {
+    var j = i;
+    while (j + 1 < cols.length && cols[j + 1] === cols[j] + 1) { j++; }
+    var block = rows.map(function (r) { return r.slice(i, j + 1); });
+    sheet.getRange(firstRow, cols[i], rows.length, j - i + 1).setValues(block);
+    i = j + 1;
+  }
+}
+
+function ppIsBlankRow_(row) {
+  for (var c = 0; c < row.length; c++) {
+    if (row[c] !== '' && row[c] !== null && row[c] !== undefined) { return false; }
+  }
+  return true;
+}
+
+/**
+ * Score rows firstRow..lastRow (1-based, header is row 1) and write the results.
+ * A row that cannot be scored gets "ERROR: ..." in its status column.
+ * Returns { scored, errors }.
+ */
+function ppScoreRows_(sheet, firstRow, lastRow) {
+  if (firstRow < 2) { firstRow = 2; }
+  if (lastRow < firstRow) { return { scored: 0, errors: 0 }; }
+
+  var outCols = ppEnsureOutputColumns_(sheet);
+  var lastCol = sheet.getLastColumn();
+  var header = ppReadHeader_(sheet);
+  var layout = PPScoring.locateItemColumns(header);
+  var problem = ppSetupProblem_(layout);
+  var nameCol = ppFindNameColumn_(header);
+
+  var count = lastRow - firstRow + 1;
+  var data = sheet.getRange(firstRow, 1, count, lastCol).getValues();
+  var out = [];
+  var scored = 0;
+  var errors = 0;
+
+  data.forEach(function (row) {
+    if (ppIsBlankRow_(row)) {
+      out.push(PPScoring.OUTPUT_HEADERS.map(function () { return ''; }));
+      return;
+    }
+    var firstName = nameCol >= 0 ? PPScoring.firstNameFrom(row[nameCol]) : '';
+    if (problem !== '') {
+      out.push(PPScoring.errorValues(firstName, problem));
+      errors++;
+      return;
+    }
+    try {
+      var answers = layout.columns.map(function (c) { return row[c]; });
+      out.push(PPScoring.outputValues(PPScoring.score(answers), firstName));
+      scored++;
+    } catch (err) {
+      out.push(PPScoring.errorValues(firstName, err.message));
+      errors++;
+    }
+  });
+
+  ppWriteColumns_(sheet, firstRow, outCols, out);
+  return { scored: scored, errors: errors };
+}
+
+function ppGetResponsesSheet_() {
+  var sheet = SpreadsheetApp.getActive().getSheetByName(PP_CONFIG.SHEET_NAME);
+  if (!sheet) {
+    throw new Error('Could not find a tab named "' + PP_CONFIG.SHEET_NAME + '".');
+  }
+  return sheet;
+}
+
+/** Text for the "Check setup" dialog. Does not change the sheet. */
+function ppSetupReport_(header, triggerInstalled, reports) {
+  var layout = PPScoring.locateItemColumns(header);
+  var found = PPScoring.OUTPUT_HEADERS.filter(function (h) { return header.indexOf(h) >= 0; }).length;
+  var lines = [];
+  lines.push('Answer columns found: ' + (100 - layout.missing.length) + ' of 100');
+  if (layout.missing.length > 0) { lines.push('  Missing items: ' + layout.missing.join(', ')); }
+  if (layout.duplicates.length > 0) { lines.push('  Duplicate items: ' + layout.duplicates.join(', ')); }
+  lines.push('First-name column: ' + (ppFindNameColumn_(header) >= 0 ? 'found' : 'NOT found'));
+  lines.push('Score columns present: ' + found + ' of ' + PPScoring.OUTPUT_HEADERS.length +
+             (found === 0 ? ' (they are added on the first scoring run)' : ''));
+  lines.push('Auto-scoring trigger: ' + (triggerInstalled ? 'installed' : 'NOT installed'));
+  if (reports) {
+    lines.push('Report folder and template: ' + (reports.configured ? 'set up' : 'NOT set up (optional)'));
+    if (reports.configured) {
+      lines.push('Automatic reports: ' + (reports.auto ? 'ON' : 'off'));
+    }
+  }
+  return lines.join('\n');
+}
+
+/* ---------- entry points ---------- */
+
+/**
+ * Optional report steps (ReportSheet.js). The scorer works without them, and they must
+ * never stop or undo scoring, so every failure here is logged and swallowed.
+ */
+function ppReportsMarkPendingSafe_(sheet, firstRow, lastRow) {
+  if (typeof ppReportsMarkPending_ !== 'function') { return; }
+  try {
+    ppReportsMarkPending_(sheet, firstRow, lastRow);
+  } catch (err) {
+    console.error('Report step (mark pending) failed: ' + err.message);
+  }
+}
+
+function ppReportsGenerateSafe_(sheet, firstRow, lastRow) {
+  if (typeof ppReportsGenerate_ !== 'function') { return null; }
+  try {
+    return ppReportsGenerate_(sheet, firstRow, lastRow);
+  } catch (err) {
+    console.error('Report step (generate) failed: ' + err.message);
+    return null;
+  }
+}
+
+/**
+ * Installable trigger: runs once for every new form submission. Scoring happens
+ * under the lock; making the PDF happens after it is released, so a slow report
+ * can never make a later student's scoring wait or time out.
+ */
+function handleFormSubmit(e) {
+  var lock = LockService.getScriptLock();
+  lock.waitLock(30000);
+  var row;
+  var sheet;
+  try {
+    row = e.range.getRow();
+    sheet = e.range.getSheet();
+    ppScoreRows_(sheet, row, row);
+    ppReportsMarkPendingSafe_(sheet, row, row);
+  } finally {
+    lock.releaseLock();
+  }
+  ppReportsGenerateSafe_(sheet, row, row);
+}
+
+/** Menu: score every response row again (safe to run any time). */
+function rescoreAllRows() {
+  var ui = SpreadsheetApp.getUi();
+  var lock = LockService.getScriptLock();
+  lock.waitLock(30000);
+  var sheet;
+  var lastRow;
+  var message;
+  try {
+    sheet = ppGetResponsesSheet_();
+    lastRow = sheet.getLastRow();
+    if (lastRow < 2) {
+      ui.alert('There are no responses to score yet.');
+      return;
+    }
+    var result = ppScoreRows_(sheet, 2, lastRow);
+    ppReportsMarkPendingSafe_(sheet, 2, lastRow);
+    message = 'Scored ' + result.scored + ' row(s). ' + result.errors +
+              ' row(s) had errors (see the "PP Scoring Status" column).';
+  } finally {
+    lock.releaseLock();
+  }
+  var reports = ppReportsGenerateSafe_(sheet, 2, lastRow);
+  if (reports) { message += ' ' + ppReportSummary_(reports); }
+  ui.alert(message);
+}
+
+/** Menu: report on the sheet's setup without changing anything. */
+function checkSetup() {
+  var ui = SpreadsheetApp.getUi();
+  var sheet = ppGetResponsesSheet_();
+  var installed = ScriptApp.getProjectTriggers().some(function (t) {
+    return t.getHandlerFunction() === PP_CONFIG.TRIGGER_HANDLER;
+  });
+  var reports = typeof ppReportSettings_ === 'function' ? ppReportSettings_() : null;
+  ui.alert('Peaceful Pathway setup check', ppSetupReport_(ppReadHeader_(sheet), installed, reports), ui.ButtonSet.OK);
+}
+
+/**
+ * Menu: turn on automatic scoring. The trigger belongs to whoever runs this,
+ * so after a change of sheet owner the new owner should run it again.
+ */
+function installTrigger() {
+  var ui = SpreadsheetApp.getUi();
+  ScriptApp.getProjectTriggers().forEach(function (t) {
+    if (t.getHandlerFunction() === PP_CONFIG.TRIGGER_HANDLER) { ScriptApp.deleteTrigger(t); }
+  });
+  ScriptApp.newTrigger(PP_CONFIG.TRIGGER_HANDLER)
+    .forSpreadsheet(SpreadsheetApp.getActive())
+    .onFormSubmit()
+    .create();
+  ui.alert('Automatic scoring is now on. New form responses will be scored as they arrive.');
+}
+
+/** Adds the menu when the sheet opens. */
+function onOpen() {
+  var menu = SpreadsheetApp.getUi()
+    .createMenu(PP_CONFIG.MENU_TITLE)
+    .addItem('Re-score all rows', 'rescoreAllRows')
+    .addItem('Check setup', 'checkSetup')
+    .addItem('Install auto-scoring trigger', 'installTrigger');
+  if (typeof setUpReports === 'function') {
+    menu.addSeparator()
+      .addItem('Set up report folder and template', 'setUpReports')
+      .addItem('Use a different report template', 'chooseReportTemplate')
+      .addItem('Turn automatic reports on or off', 'toggleAutoReports')
+      .addItem('Generate pending reports', 'generatePendingReports');
+  }
+  menu.addToUi();
+}

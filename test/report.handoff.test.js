@@ -7,7 +7,10 @@ const assert = require('node:assert');
 const fs = require('fs');
 const path = require('path');
 const { PPScoring, PPReport } = require('./helpers/load');
-const { answersForSums } = require('./helpers/builders');
+const { answersForSums, masterHeaderRow, masterRow } = require('./helpers/builders');
+const { FakeSheet } = require('./helpers/fakeSheet');
+const { FakeGoogle } = require('./helpers/fakeGoogle');
+const { sheetFns } = require('./helpers/load');
 
 const FIXTURE = path.join(__dirname, 'fixtures', 'handoff.json');
 const have = fs.existsSync(FIXTURE);
@@ -97,4 +100,40 @@ test('every possible result finds all its text, and every piece is her exact wor
     }
   }
   assert.strictEqual(seen.size, 1620);
+});
+
+test('end to end: each Worked Example submitted as a form response yields a PDF whose portrait is her exact output', opts, () => {
+  const examples = fixture['Worked Examples'].slice(1);
+  const rows = examples.map(([name, scores]) => {
+    const sums = {};
+    for (const m of scores.matchAll(/([OCEAN]) (\d\.\d) \(/g)) sums[m[1]] = Math.round(parseFloat(m[2]) * 20);
+    return masterRow(name + ' X.', answersForSums(sums));
+  });
+  const sheet = new FakeSheet([masterHeaderRow(), ...rows], 108);
+  const g = new FakeGoogle().install(sheet);
+  g.tabs = {
+    'Initial Test': new FakeSheet(fixture['Initial Test']),
+    'Combination Portraits': new FakeSheet(fixture['Combination Portraits']),
+    'Portrait Closings': new FakeSheet(fixture['Portrait Closings'])
+  };
+  sheetFns.setUpReports();
+  g.props.PP_REPORT_AUTO = 'on';
+  rows.forEach((_, i) => sheetFns.handleFormSubmit({ range: { getRow: () => i + 2, getSheet: () => sheet } }));
+
+  const header = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+  const linkCol = header.indexOf('PP Report Link') + 1;
+  const statusCol = header.indexOf('PP Report Status') + 1;
+  examples.forEach(([name, , , , expected], i) => {
+    assert.strictEqual(sheet.getRange(i + 2, statusCol, 1, 1).getValues()[0][0], 'OK', name);
+    const url = sheet.getRange(i + 2, linkCol, 1, 1).getValues()[0][0];
+    const pdf = g.files.get(/\/d\/([^/]+)/.exec(url)[1]);
+    const lines = pdf.text.split('\n');
+    assert.strictEqual(lines[lines.length - 1], expected, name + ' portrait');
+    assert.ok(!pdf.text.includes('{{'), name);
+    assert.strictEqual(pdf.name, name + ' X. - Peaceful Pathway Report.pdf');
+    // trait sections come first, in O, C, E, A, N order, with her wording
+    assert.strictEqual(lines[0], 'Openness to Experience');
+    assert.strictEqual(lines[9], 'Conscientiousness');
+    assert.strictEqual(lines[36], 'Neuroticism');
+  });
 });

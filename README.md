@@ -20,8 +20,8 @@ Owner: Peaceful Pathway, L.L.C. (per the developer handoff).
 | Runs in real Google Sheets | Done. 10 fake rows pasted into a practice copy, menu *Re-score all rows*: all 10 matched the expected answers, and the deliberately broken row was flagged `ERROR`. |
 | Automatic trigger | Done on a practice copy. A fake response submitted through a copy of the student form was scored automatically within seconds and matched the expected keys. |
 | Installed on Shelly's real form/sheet | **Not done.** Needs Shelly's account (see "Going live"). |
-| Report assembler (`src/Report.js`) | **Done and tested, not yet wired into the sheet.** Turns the scorer's keys into the report pieces using only Shelly's wording. Matches all five Worked Examples word for word; all 1,620 possible results resolve. No Google Doc/PDF output yet. |
-| Report document (styled PDF) and sheet wiring | **Not started.** Needs her layout decisions (see "Where we are going"). |
+| Report assembler (`src/Report.js`) | Done and tested. Turns the scorer's keys into the report pieces using only Shelly's wording. Matches all five Worked Examples word for word; all 1,620 possible results resolve. |
+| PDF report generation (`src/ReportDoc.js`, `src/ReportSheet.js`) | **Built and tested against fake Google services only. Not yet run in real Google.** Template Doc to PDF, link in the row, automatic on submit (switchable). Needs a practice-copy rehearsal before going near real data (see "Report generation"). |
 | Adult form | Out of scope for now. |
 | Deep Dives (60-item tests) | Out of scope for now. |
 
@@ -50,16 +50,22 @@ Security for the live sheet (do before real responses arrive):
 - Decide what to collect: the sheet holds names, emails, grade and birth month/year for minors. Ask the school about data rules (FERPA, state law) and set a retention and deletion plan.
 - Never paste real student responses into AI tools or third-party services (handoff privacy rule).
 
-### 2. Report generation (after go-live; practice copy first)
+### 2. Report generation (practice copy first)
 
-Agreed plan, not yet built:
-- Shelly's handoff workbook already contains **all the wording**: 15 trait sections (5 traits x 3 levels: label, paragraph, Gifts, Growth Edge), 90 combination-portrait texts, 15 closing lines, and the opening line "[First name], here's what makes you, you." Nobody writes feedback; the tool only **assembles** it by her rules (Read Me, Steps 3 to 5) and must not add or rewrite text.
-- Generate **on demand** (menu action or batch), not automatically on every submission, so wording or layout can still change.
-- The wording stays in a **content tab copied from Shelly's workbook** in the same Google account, so edits happen there first.
-- Output: one Google Doc per respondent in **one restricted folder**, linked in a column next to the keys. Never auto-share or email; reports go only to the person who took the test.
-- Branding: student reports green (`#1F5C3E`), adult reports blue (`#014D86`), Poppins.
-- Rehearse first: copy the wording tabs into a practice sheet, generate documents for the fake rows, and compare to the five Worked Examples word for word.
-- Needs extra Google permissions (create documents); Google also caps how many documents a script can make per day, so check current limits before promising hundreds at once.
+**Decisions made (Sam, 2026-11-27):** the only delivery is the PDF **link in a column next to the row** (no email, no sharing logic); the PDF is named with the sheet's name field (e.g. `Jordan R. - Peaceful Pathway Report.pdf`); **re-scoring a row replaces its report** (new PDF, link updated, old PDF to the trash); a plain **placeholder template** ships now and Shelly's designed template drops in later; reports are made **automatically after scoring** with an on/off switch.
+
+How it works (all in the sheet's own Google account; built, not yet proven in real Google):
+- The wording is in three **content tabs copied from Shelly's workbook** into the same sheet, under her tab names: `Initial Test`, `Combination Portraits`, `Portrait Closings`. Edit wording there, never in code. The code only assembles it by her rules (Read Me, Steps 3 and 4) and adds no wording: the opening line pattern is hers, and the only static words in the placeholder template are her column names "Gifts" and "Growth Edge".
+- Menu **Set up report folder and template** creates one private folder and a plain green Poppins template Doc (five trait blocks in O, C, E, A, N order, then the portrait). **Use a different report template** switches to a designed Doc (paste its link; it is checked for typos first).
+- A template may use only these placeholders: `{{FIRST_NAME}}` `{{OPENING}}` `{{MAIN_PAIR_TEXT}}` `{{SECOND_PAIR_TEXT}}` `{{CLOSING}}` `{{PORTRAIT}}` (opening + main + second + closing, exactly as in her Worked Examples) and, for each trait letter X in O, C, E, A, N: `{{X_NAME}}` `{{X_DEFINITION}}` `{{X_LEVEL}}` `{{X_LABEL}}` `{{X_PARAGRAPH}}` `{{X_GIFTS}}` `{{X_GROWTH_EDGE}}`. An unknown `{{...}}` stops the run before any PDF is made; a report that would still contain a `{{...}}` is never produced.
+- **Status flow** (column `PP Report Status`, link in `PP Report Link`): `PENDING` (scored, report due) to `MAKING` (claimed) to `OK`, or `ERROR: reason`; rows that did not score show `SKIPPED: scoring error`. Re-scoring sets rows back to `PENDING`.
+- **Scoring is never held up by reports.** Scoring runs under the lock as before; the PDF is made afterwards, row by row. A failure (Drive error, missing content tab, template typo, lock timeout) is written into the row's status and the score stands. A run stops starting new reports after about 4.5 minutes (Apps Script's limit is 6); the rest stay `PENDING` for **Generate pending reports**, which also retries `ERROR` rows and makes reports for rows scored before setup.
+- Menu **Turn automatic reports on or off**: off by default after setup. Reports go only to the person who took the test, by someone with access to the folder; nothing is shared or emailed by the code.
+- Branding: student reports green (`#1F5C3E`), Poppins (adult blue `#014D86` later).
+
+**Permissions (a real change from the scorer-only build).** Making Docs and PDFs needs the `documents` and `drive` scopes. Apps Script's Drive service has no narrower option (`drive.file` is not accepted by `DriveApp`), so this build can see the whole Drive of the account that approves it. A narrower design exists (the Advanced Drive service with `drive.file`, folder and template created by the script) but is more work and untested. Use `appsscript.reports.json` and `rehearsal/PP_Scorer_Reports_AllInOne.txt` for it; the scorer-only manifest and paste file are unchanged and still need no Drive access.
+
+**Not yet verified in real Google** (only fake services in tests): Poppins rendering in the exported PDF, `replaceText` keeping the template's formatting, PDF page layout with long texts, the daily document and run-time limits, `moveTo`/`makeCopy` behavior, and the permission prompt. Rehearse on a practice copy with fake rows: paste the report build, copy the three content tabs in, run *Set up report folder and template*, submit fake responses, open the PDFs and compare to the five Worked Examples.
 
 ### 3. Later (not planned yet)
 
@@ -72,7 +78,7 @@ Adult form (same key; headers unchecked), Deep Dives, and percentile reporting o
 - Is there a reason for the stray `Column 106` header and Birth Month appended at the end of the old master sheet? A freshly linked copy of the form does not produce either, so it looks like a leftover in that sheet, not a form problem. (The scorer ignores both.)
 - Her chat suggested 8 to 10 reverse-keyed Openness items; the key has 7 (O7 C8 E8 A9 N8). The key governs scoring and was not changed. Confirm that is intended.
 - Keep email and birth month in the sheet? Is the form final (freeze it once live)?
-- Report layout: headings, fonts, whether level and label are shown.
+- Report layout: visual design only (the Read Me, Step 3, already lists the fields: trait name, definition, level, label, paragraph, Gifts, Growth Edge). Does she have a designed template?
 - Sign-off on unusual portrait cases her five examples do not cover (three-way ties, all one level, large gaps). A one-page review sheet for her to confirm is a good idea.
 
 ---
@@ -90,6 +96,8 @@ Scored columns are added after the last used column. Each header is found by nam
 | `PP Second Pair Key` | `O(H)+E(L)` |
 | `PP Closing Key` | `O(H)` |
 | `PP Scoring Status` | `OK`, or `ERROR: ...` with the reason |
+| `PP Report Link` | Link to the report PDF (only once reports are set up) |
+| `PP Report Status` | `PENDING`, `MAKING`, `OK`, `ERROR: ...` or `SKIPPED: scoring error` (only once reports are set up) |
 
 Keys match the **Lookup Key** column of the handoff workbook's *Combination Portraits* tab. The two traits in a pair key are always listed in the order **O, N, E, A, C**, which is how that tab is organized. The closing key is the top trait and its level (for example `O(H)`); the *Portrait Closings* tab has trait and level columns rather than a key, so that format is ours.
 
@@ -105,7 +113,8 @@ Keys match the **Lookup Key** column of the handoff workbook's *Combination Port
 
 - If a header does not match the key, or an answer is not a whole number 1 to 5, the row is marked `ERROR` with the reason. Nothing is guessed.
 - It only writes into its own `PP ...` columns and never edits answers or any other column.
-- No network requests, email, Drive files or documents. The manifest requests only the narrow spreadsheet, menu and trigger permissions (this worked in real Google Sheets).
+- No network requests and no email, in any file (a test enforces it). The scorer-only build touches no Drive or Docs and its manifest requests only the narrow spreadsheet, menu and trigger permissions (this worked in real Google Sheets). Only `src/ReportDoc.js` may touch Drive and Docs (another test enforces that), and only the reports build asks for those permissions.
+- A report problem never changes or blocks a score.
 - No student data lives in this repo. `.gitignore` blocks `*.xlsx` and `*.csv`.
 
 ## Files
@@ -114,25 +123,27 @@ Keys match the **Lookup Key** column of the handoff workbook's *Combination Port
 |---|---|
 | `src/Key.js` | The 100-item answer key, generated from the workbook's *Key Reference* tab |
 | `src/Scoring.js` | Pure scoring logic |
-| `src/Report.js` | Pure report assembler: reads the content tabs, looks up text by key, adds no wording. Not yet in the all-in-one paste file (not used by the sheet yet) |
-| `src/Sheet.js` | Google Sheets glue: trigger, menu, column handling |
+| `src/Report.js` | Pure report assembler: reads the content tabs, looks up text by key, adds no wording; defines the template placeholders |
+| `src/ReportDoc.js` | The only file that touches Drive and Docs: folder, placeholder template, fill template, export PDF, trash old PDF |
+| `src/ReportSheet.js` | Report status flow in the sheet, settings, content-tab loading, report menu actions |
+| `src/Sheet.js` | Google Sheets glue: trigger, menu, column handling; calls the report steps if present |
 | `tools/make-fixture.py` | Converts the handoff workbook into `test/fixtures/handoff.json` (her wording; gitignored) for the real-wording tests |
-| `appsscript.json` | Apps Script manifest (V8 runtime, permission scopes) |
-| `rehearsal/PP_Scorer_AllInOne.txt` | The three `src/` files joined in load order, for pasting into one `Code.gs` (or attaching to email; Gmail blocks `.js`) |
-| `test/` | 60 tests, run with `npm test` (Node 22 or later, no dependencies). The real-wording tests (`report.handoff.test.js`) are skipped, loudly, unless `test/fixtures/handoff.json` exists |
+| `appsscript.json` | Apps Script manifest for the scorer-only build (narrow scopes) |
+| `appsscript.reports.json` | Manifest for the reports build: adds the `documents` and `drive` scopes |
+| `rehearsal/PP_Scorer_AllInOne.txt` | Scorer only: `Key.js`, `Scoring.js`, `Sheet.js` joined for pasting into one `Code.gs` (or attaching to email; Gmail blocks `.js`) |
+| `rehearsal/PP_Scorer_Reports_AllInOne.txt` | Scorer plus PDF reports: all six `src/` files joined in load order |
+| `tools/build-paste-files.sh` | Rebuilds both paste files from `src/` |
+| `test/` | 82 tests, run with `npm test` (Node 22 or later, no dependencies). The real-wording tests (`report.handoff.test.js`) are skipped, loudly, unless `test/fixtures/handoff.json` exists |
 
-The all-in-one file is **generated from `src/`; edit `src/`, not that file.** To rebuild it:
+The paste files are **generated from `src/`; edit `src/`, not those files.** To rebuild both:
 
 ```bash
-{ echo "/* Peaceful Pathway scorer: ALL-IN-ONE paste file. Key.js + Scoring.js + Sheet.js, unchanged. Source of truth: src/. */"
-  echo; echo "/* ---------------- Key.js ---------------- */"; cat src/Key.js
-  echo; echo "/* ---------------- Scoring.js ---------------- */"; cat src/Scoring.js
-  echo; echo "/* ---------------- Sheet.js ---------------- */"; cat src/Sheet.js; } > rehearsal/PP_Scorer_AllInOne.txt
+tools/build-paste-files.sh
 ```
 
 ## Tests
 
-`npm test` covers: the key (100 items, 20 per trait, reverse counts O7 C8 E8 A9 N8); reverse scoring; every cutoff edge; ties; the five Worked Examples from the handoff; an exhaustive run proving every possible result is a valid key and that there are exactly **1,620** distinct reports; the header matching; and the sheet layer against a fake sheet laid out like the real master.
+`npm test` covers: the key (100 items, 20 per trait, reverse counts O7 C8 E8 A9 N8); reverse scoring; every cutoff edge; ties; the five Worked Examples from the handoff; an exhaustive run proving every possible result is a valid key and that there are exactly **1,620** distinct reports; the header matching; and the sheet layer against a fake sheet laid out like the real master. For reports: the assembler against synthetic wording (proving no added words) and against her real wording (five Worked Examples word for word, all 1,620 results, every piece an exact string from her tabs); the report layer on fake Google services (status flow, replace-on-rescore, every failure mode leaving the score intact, template typos, the `$` and `{{...}}` guards); and a check that the scorer-only build still works alone. The fakes mimic Google's services closely enough to test our logic, but they are not Google: see "Not yet verified in real Google".
 
 ## Known gotchas
 
@@ -145,6 +156,6 @@ The all-in-one file is **generated from `src/`; edit `src/`, not that file.** To
 
 ## How to resume
 
-1. Read this file, then run `npm test` (should show 60 passing; build the fixture first so none are skipped).
+1. Read this file, then run `npm test` (should show 82 passing; build the fixture first so none are skipped).
 2. The sources of truth are Shelly's handoff workbook (`PP_Feedback_Content_Developer_Handoff`: Read Me rules, Combination Portraits, Portrait Closings, Initial Test, Worked Examples) and `PP_Scoring_Template_v3` (Key Reference). Neither is in this repo.
-3. Next task: the go-live meeting checklist above, then the report-generation practice build.
+3. Next task: rehearse the reports build on a practice copy (fake rows only; see "Report generation"), get Shelly's layout decisions and sign-off on the untested portrait cases (three-way score ties, all-High or all-Low profiles), then the go-live checklist. Decide the Drive-permission question (full `drive` scope vs the narrower Advanced Drive design) before installing the reports build on real data.

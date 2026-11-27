@@ -247,10 +247,65 @@ var PPReport = (function () {
     };
   }
 
+  /* ---------- template placeholders (used by the Docs layer) ---------- */
+
+  // Per-trait placeholders look like {{O_NAME}}, {{C_GROWTH_EDGE}}. Trait order is fixed
+  // (O, C, E, A, N), so a template simply has five blocks.
+  var TRAIT_FIELDS = [
+    ['NAME', 'name'], ['DEFINITION', 'definition'], ['LEVEL', 'level'], ['LABEL', 'label'],
+    ['PARAGRAPH', 'paragraph'], ['GIFTS', 'gifts'], ['GROWTH_EDGE', 'growthEdge']
+  ];
+
+  /** Every placeholder a template may use. */
+  function placeholderNames() {
+    var names = ['{{FIRST_NAME}}', '{{OPENING}}', '{{MAIN_PAIR_TEXT}}', '{{SECOND_PAIR_TEXT}}',
+                 '{{CLOSING}}', '{{PORTRAIT}}'];
+    PPScoring.TRAITS.forEach(function (code) {
+      TRAIT_FIELDS.forEach(function (f) { names.push('{{' + code + '_' + f[0] + '}}'); });
+    });
+    return names;
+  }
+
+  /** Map each placeholder to its text for one assembled report. Text is passed through unchanged. */
+  function placeholders(report) {
+    var map = {
+      '{{FIRST_NAME}}': report.firstName,
+      '{{OPENING}}': report.portrait.opening,
+      '{{MAIN_PAIR_TEXT}}': report.portrait.mainPair.text,
+      '{{SECOND_PAIR_TEXT}}': report.portrait.secondPair.text,
+      '{{CLOSING}}': report.portrait.closing.text,
+      '{{PORTRAIT}}': report.portrait.text
+    };
+    report.traits.forEach(function (t) {
+      TRAIT_FIELDS.forEach(function (f) { map['{{' + t.code + '_' + f[0] + '}}'] = t[f[1]]; });
+    });
+    return map;
+  }
+
+  /** Every {{...}} token found in a piece of text (document text), in order. */
+  function findPlaceholders(text) {
+    return String(text === null || text === undefined ? '' : text).match(/\{\{[^{}]*\}\}/g) || [];
+  }
+
+  /** Tokens in the text that are not a known placeholder (typos in a template), without repeats. */
+  function unknownPlaceholders(text) {
+    var known = placeholderNames();
+    var seen = {};
+    return findPlaceholders(text).filter(function (token) {
+      if (known.indexOf(token) !== -1 || seen[token]) { return false; }
+      seen[token] = true;
+      return true;
+    });
+  }
+
   return {
     LEVELS: LEVELS,
     OPENING_SUFFIX: OPENING_SUFFIX,
     parseContent: parseContent,
-    assemble: assemble
+    assemble: assemble,
+    placeholderNames: placeholderNames,
+    placeholders: placeholders,
+    findPlaceholders: findPlaceholders,
+    unknownPlaceholders: unknownPlaceholders
   };
 })();

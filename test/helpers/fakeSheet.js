@@ -22,6 +22,11 @@ class FakeSheet {
     this.grid.forEach((r, i) => { if (r.some((v) => v !== '')) last = i + 1; });
     return last;
   }
+  getDataRange() {
+    const rows = this.getLastRow();
+    const cols = this.getLastColumn();
+    return this.getRange(1, 1, Math.max(rows, 1), Math.max(cols, 1));
+  }
   getRange(row, col, numRows, numCols) {
     numRows = numRows || 1; numCols = numCols || 1;
     if (row < 1 || col < 1 || col + numCols - 1 > this.maxCols) {

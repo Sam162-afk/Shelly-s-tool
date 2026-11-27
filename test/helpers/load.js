@@ -5,7 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const vm = require('vm');
 
-const FILES = ['Key.js', 'Scoring.js', 'Report.js', 'Sheet.js'];
+const FILES = ['Key.js', 'Scoring.js', 'Report.js', 'ReportDoc.js', 'ReportSheet.js', 'Sheet.js'];
 
 for (const file of FILES) {
   const full = path.join(__dirname, '..', '..', 'src', file);
@@ -15,6 +15,7 @@ for (const file of FILES) {
 module.exports = {
   PPScoring: globalThis.PPScoring,
   PPReport: globalThis.PPReport,
+  PP_REPORT: globalThis.PP_REPORT,
   PP_ITEMS: globalThis.PP_ITEMS,
   PP_CONFIG: globalThis.PP_CONFIG,
   sheetFns: {
@@ -25,6 +26,13 @@ module.exports = {
     rescoreAllRows: globalThis.rescoreAllRows,
     checkSetup: globalThis.checkSetup,
     installTrigger: globalThis.installTrigger,
-    onOpen: globalThis.onOpen
+    onOpen: globalThis.onOpen,
+    setUpReports: globalThis.setUpReports,
+    chooseReportTemplate: globalThis.chooseReportTemplate,
+    toggleAutoReports: globalThis.toggleAutoReports,
+    generatePendingReports: globalThis.generatePendingReports,
+    generateReports: globalThis.ppGenerateReports_,
+    markReportsPending: globalThis.ppMarkReportsPending_,
+    reportSettings: globalThis.ppReportSettings_
   }
 };

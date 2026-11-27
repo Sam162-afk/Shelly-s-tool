@@ -112,7 +112,7 @@ function installFakes(sheet) {
     alert: (...a) => log.alerts.push(a.join(' | ')),
     ButtonSet: { OK: 'OK' },
     createMenu: (title) => {
-      const m = { addItem: (label, fn) => { log.menu.push([title, label, fn]); return m; }, addToUi: () => {} };
+      const m = { addItem: (label, fn) => { log.menu.push([title, label, fn]); return m; }, addSeparator: () => m, addToUi: () => {} };
       return m;
     }
   };
@@ -165,10 +165,11 @@ test('install trigger replaces any old scoring trigger and leaves other triggers
   assert.deepStrictEqual(log.triggers, ['handleFormSubmit']);
 });
 
-test('menu has the three items', () => {
+test('menu has the three scoring items, then the four report items', () => {
   const log = installFakes(masterSheet([]));
   sheetFns.onOpen();
-  assert.deepStrictEqual(log.menu.map((m) => m[2]), ['rescoreAllRows', 'checkSetup', 'installTrigger']);
+  assert.deepStrictEqual(log.menu.map((m) => m[2]), ['rescoreAllRows', 'checkSetup', 'installTrigger',
+    'setUpReports', 'chooseReportTemplate', 'toggleAutoReports', 'generatePendingReports']);
 });
 
 test('setup check reports what it finds without changing the sheet', () => {
@@ -182,13 +183,17 @@ test('setup check reports what it finds without changing the sheet', () => {
   assert.strictEqual(sheet.getLastColumn(), 108);
 });
 
-test('the code makes no network requests and sends no email', () => {
+test('no file makes network requests or sends email; only ReportDoc.js may touch Drive or Docs', () => {
   const fs = require('fs');
-  for (const f of ['Key.js', 'Scoring.js', 'Sheet.js']) {
+  const files = fs.readdirSync(require('path').join(__dirname, '..', 'src')).filter((f) => f.endsWith('.js'));
+  assert.deepStrictEqual(files.sort(), ['Key.js', 'Report.js', 'ReportDoc.js', 'ReportSheet.js', 'Scoring.js', 'Sheet.js']);
+  for (const f of files) {
     const code = fs.readFileSync(require('path').join(__dirname, '..', 'src', f), 'utf8')
       .split('\n').filter((l) => !/^\s*(\*|\/\/|\/\*)/.test(l)).join('\n');
-    for (const banned of ['UrlFetchApp', 'MailApp', 'GmailApp', 'DocumentApp', 'DriveApp', 'fetch(', 'XMLHttpRequest']) {
-      assert.ok(!code.includes(banned), f + ' must not use ' + banned);
+    const banned = ['UrlFetchApp', 'MailApp', 'GmailApp', 'fetch(', 'XMLHttpRequest'];
+    if (f !== 'ReportDoc.js') banned.push('DocumentApp', 'DriveApp');
+    for (const word of banned) {
+      assert.ok(!code.includes(word), f + ' must not use ' + word);
     }
   }
 });
