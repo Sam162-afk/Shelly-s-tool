@@ -28,6 +28,8 @@ class FakeGoogle {
       setName(n) { f.name = n; return this; },
       setTrashed(t) { f.trashed = t; return this; },
       moveTo(folder) { f.parent = folder.getId(); return this; },
+      getMimeType: () => (f.kind === 'pdf' ? 'application/pdf' : 'application/vnd.google-apps.document'),
+      getParents() { const list = f.parent ? [{ getId: () => f.parent }] : []; let i = 0; return { hasNext: () => i < list.length, next: () => list[i++] }; },
       makeCopy(name, folder) {
         return g.fileApi(g.add({ ...f, id: g.id('doc'), name, paras: f.paras.map((p) => ({ ...p })), parent: folder.getId(), trashed: false }));
       },

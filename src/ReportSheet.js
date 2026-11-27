@@ -214,7 +214,7 @@ function ppGenerateReports_(sheet, firstRow, lastRow, opts) {
       var made = ppRenderPdf_(report, ppPdfName_(nameCell, firstName), settings.templateId, settings.folderId);
       var oldLink = String(item.row[linkCol - 1] || '');
       ppWriteColumns_(sheet, item.number, [linkCol, statusCol], [[made.url, 'OK']]);
-      if (oldLink !== '' && oldLink !== made.url) { ppTrashByUrl_(oldLink); }
+      if (oldLink !== '' && oldLink !== made.url) { ppTrashByUrl_(oldLink, settings.folderId); }
       result.made++;
     } catch (err) {
       ppWriteColumns_(sheet, item.number, [statusCol], [['ERROR: ' + err.message]]);

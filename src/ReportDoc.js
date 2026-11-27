@@ -153,12 +153,24 @@ function ppRenderPdf_(report, pdfName, templateId, folderId) {
   }
 }
 
-/** Move the old report PDF behind a stored link to the trash. Never throws. */
-function ppTrashByUrl_(url) {
+/**
+ * Move the old report PDF behind a stored link to the trash. Never throws. The link is
+ * only a cell anyone with edit access can change, so this trashes the file ONLY if it is
+ * a PDF sitting directly in the report folder; anything else is left alone.
+ */
+function ppTrashByUrl_(url, folderId) {
   var match = /\/d\/([A-Za-z0-9_-]+)/.exec(String(url));
   if (!match) { return false; }
   try {
-    DriveApp.getFileById(match[1]).setTrashed(true);
+    var file = DriveApp.getFileById(match[1]);
+    if (file.getMimeType() !== 'application/pdf') { return false; }
+    var inFolder = false;
+    var parents = file.getParents();
+    while (parents.hasNext()) {
+      if (parents.next().getId() === folderId) { inFolder = true; }
+    }
+    if (!inFolder) { return false; }
+    file.setTrashed(true);
     return true;
   } catch (ignore) {
     return false;

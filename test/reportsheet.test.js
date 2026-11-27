@@ -299,3 +299,21 @@ test('a report that would still contain a {{token}} is never produced', () => {
   assert.strictEqual(g.live('pdf').length, 0);
   assert.strictEqual(link(sheet, 2), '');
 });
+
+test('the old-report cleanup only trashes a PDF inside the report folder, whatever the link cell says', () => {
+  const { sheet, g } = setup();
+  submit(sheet, 2);
+  const linkCell = () => sheet.getRange(2, colOf(sheet, 'PP Report Link'), 1, 1);
+  const outsider = g.add({ id: g.id('pdf'), name: 'Someone else', kind: 'pdf', text: 'private', parent: 'some-other-folder', trashed: false });
+  const template = g.live('doc')[0];
+  for (const target of [outsider, template]) {
+    linkCell().setValues([[`https://drive.google.com/file/d/${target.id}/view`]]);
+    sheetFns.rescoreAllRows();
+    assert.strictEqual(target.trashed, false, target.name + ' must not be trashed');
+    assert.strictEqual(status(sheet, 2), 'OK');
+  }
+  // a normal replace still cleans up its own old PDF
+  const before = fileIn(g, link(sheet, 2));
+  sheetFns.rescoreAllRows();
+  assert.strictEqual(before.trashed, true);
+});

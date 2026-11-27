@@ -63,7 +63,7 @@ How it works (all in the sheet's own Google account; built, not yet proven in re
 - Menu **Turn automatic reports on or off**: off by default after setup. Reports go only to the person who took the test, by someone with access to the folder; nothing is shared or emailed by the code.
 - Branding: student reports green (`#1F5C3E`), Poppins (adult blue `#014D86` later).
 
-**Permissions (a real change from the scorer-only build).** Making Docs and PDFs needs the `documents` and `drive` scopes. Apps Script's Drive service has no narrower option (`drive.file` is not accepted by `DriveApp`), so this build can see the whole Drive of the account that approves it. A narrower design exists (the Advanced Drive service with `drive.file`, folder and template created by the script) but is more work and untested. Use `appsscript.reports.json` and `rehearsal/PP_Scorer_Reports_AllInOne.txt` for it; the scorer-only manifest and paste file are unchanged and still need no Drive access.
+**Permissions (a real change from the scorer-only build).** Making Docs and PDFs needs the `documents` and `drive` scopes. Apps Script's Drive service has no narrower option (`drive.file` is not accepted by `DriveApp`), so this build can see the whole Drive of the account that approves it. The permission is a grant, not a limit: the code only touches the report folder, its template and PDFs (and trashes an old PDF only if it is a PDF inside that folder), but anyone who can edit the sheet can edit the script and use the same grant, so keep the sheet's editor list short. A narrower design exists (the Advanced Drive service with `drive.file`, folder and template created by the script) but is more work and untested. Use `appsscript.reports.json` and `rehearsal/PP_Scorer_Reports_AllInOne.txt` for it; the scorer-only manifest and paste file are unchanged and still need no Drive access.
 
 **Not yet verified in real Google** (only fake services in tests): Poppins rendering in the exported PDF, `replaceText` keeping the template's formatting, PDF page layout with long texts, the daily document and run-time limits, `moveTo`/`makeCopy` behavior, and the permission prompt. Rehearse on a practice copy with fake rows: paste the report build, copy the three content tabs in, run *Set up report folder and template*, submit fake responses, open the PDFs and compare to the five Worked Examples.
 
@@ -133,7 +133,7 @@ Keys match the **Lookup Key** column of the handoff workbook's *Combination Port
 | `rehearsal/PP_Scorer_AllInOne.txt` | Scorer only: `Key.js`, `Scoring.js`, `Sheet.js` joined for pasting into one `Code.gs` (or attaching to email; Gmail blocks `.js`) |
 | `rehearsal/PP_Scorer_Reports_AllInOne.txt` | Scorer plus PDF reports: all six `src/` files joined in load order |
 | `tools/build-paste-files.sh` | Rebuilds both paste files from `src/` |
-| `test/` | 82 tests, run with `npm test` (Node 22 or later, no dependencies). The real-wording tests (`report.handoff.test.js`) are skipped, loudly, unless `test/fixtures/handoff.json` exists |
+| `test/` | 83 tests, run with `npm test` (Node 22 or later, no dependencies). The real-wording tests (`report.handoff.test.js`) are skipped, loudly, unless `test/fixtures/handoff.json` exists |
 
 The paste files are **generated from `src/`; edit `src/`, not those files.** To rebuild both:
 
@@ -143,7 +143,7 @@ tools/build-paste-files.sh
 
 ## Tests
 
-`npm test` covers: the key (100 items, 20 per trait, reverse counts O7 C8 E8 A9 N8); reverse scoring; every cutoff edge; ties; the five Worked Examples from the handoff; an exhaustive run proving every possible result is a valid key and that there are exactly **1,620** distinct reports; the header matching; and the sheet layer against a fake sheet laid out like the real master. For reports: the assembler against synthetic wording (proving no added words) and against her real wording (five Worked Examples word for word, all 1,620 results, every piece an exact string from her tabs); the report layer on fake Google services (status flow, replace-on-rescore, every failure mode leaving the score intact, template typos, the `$` and `{{...}}` guards); and a check that the scorer-only build still works alone. The fakes mimic Google's services closely enough to test our logic, but they are not Google: see "Not yet verified in real Google".
+`npm test` covers: the key (100 items, 20 per trait, reverse counts O7 C8 E8 A9 N8); reverse scoring; every cutoff edge; ties; the five Worked Examples from the handoff; an exhaustive run proving every possible result is a valid key and that there are exactly **1,620** distinct reports; the header matching; and the sheet layer against a fake sheet laid out like the real master. For reports: the assembler against synthetic wording (proving no added words) and against her real wording (five Worked Examples word for word, all 1,620 results, every piece an exact string from her tabs); the report layer on fake Google services (status flow, replace-on-rescore, every failure mode leaving the score intact, template typos, the `$` and `{{...}}` guards, old-PDF cleanup limited to PDFs inside the report folder); and a check that the scorer-only build still works alone. The fakes mimic Google's services closely enough to test our logic, but they are not Google: see "Not yet verified in real Google".
 
 ## Known gotchas
 
@@ -156,6 +156,6 @@ tools/build-paste-files.sh
 
 ## How to resume
 
-1. Read this file, then run `npm test` (should show 82 passing; build the fixture first so none are skipped).
+1. Read this file, then run `npm test` (should show 83 passing; build the fixture first so none are skipped).
 2. The sources of truth are Shelly's handoff workbook (`PP_Feedback_Content_Developer_Handoff`: Read Me rules, Combination Portraits, Portrait Closings, Initial Test, Worked Examples) and `PP_Scoring_Template_v3` (Key Reference). Neither is in this repo.
 3. Next task: rehearse the reports build on a practice copy (fake rows only; see "Report generation"), get Shelly's layout decisions and sign-off on the untested portrait cases (three-way score ties, all-High or all-Low profiles), then the go-live checklist. Decide the Drive-permission question (full `drive` scope vs the narrower Advanced Drive design) before installing the reports build on real data.
